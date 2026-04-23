@@ -1,0 +1,2322 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DECA | استدامة مياه النيل</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Tajawal:wght@400;700;900&display=swap"
+        rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Cairo', 'sans-serif'], heading: ['Tajawal', 'sans-serif'], mono: ['Courier New', 'monospace'] },
+                    colors: {
+                        nile: {
+                            dark: '#020b14', base: '#0a192f', light: '#112240', card: '#1d2d44',
+                            cyan: '#64ffda', blue: '#00d2ff', accent: '#f39c12',
+                            emerald: '#2ecc71', plastic: '#8b5cf6', purple: '#c084fc'
+                        }
+                    },
+                    animation: { 'float': 'float 6s ease-in-out infinite', 'pulse-slow': 'pulse 3s cubic-bezier(0.4,0,0.6,1) infinite', 'ping-slow': 'ping 2s cubic-bezier(0,0,0.2,1) infinite' },
+                    keyframes: { float: { '0%,100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-10px)' } } }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0a192f;
+            color: #8892b0;
+            scroll-behavior: smooth;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5 {
+            font-family: 'Tajawal', sans-serif;
+            color: #ccd6f6;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0a192f;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #1d2d44;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64ffda;
+        }
+
+        .glass-card {
+            background: rgba(17, 34, 64, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(100, 255, 218, 0.15);
+            border-radius: 20px;
+            transition: all 0.4s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 40px -10px rgba(100, 255, 218, 0.25);
+            border-color: rgba(100, 255, 218, 0.45);
+        }
+
+        .gradient-text {
+            background: linear-gradient(to right, #64ffda, #00d2ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-container {
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            cursor: grab;
+        }
+
+        .nav-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .nav-container.dragging {
+            cursor: grabbing;
+            user-select: none;
+        }
+
+        .nav-btn {
+            position: relative;
+            color: #ccd6f6;
+            transition: color 0.3s;
+            cursor: pointer;
+            padding: 0.7rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            white-space: nowrap;
+            font-size: 0.9rem;
+        }
+
+        .nav-btn:hover {
+            background: rgba(100, 255, 218, 0.1);
+            color: #64ffda;
+        }
+
+        .nav-btn.active {
+            background: rgba(100, 255, 218, 0.15);
+            color: #64ffda;
+            border-bottom: 2px solid #64ffda;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .spa-section {
+            display: none;
+            animation: fadeIn 0.45s ease-out forwards;
+        }
+
+        .spa-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(14px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        .digital-font {
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            transition: color 0.5s, text-shadow 0.5s;
+        }
+
+        .alert-red {
+            color: #ff4d4f;
+            text-shadow: 0 0 12px rgba(255, 77, 79, 0.7);
+        }
+
+        .alert-yellow {
+            color: #f39c12;
+            text-shadow: 0 0 12px rgba(243, 156, 18, 0.7);
+        }
+
+        .alert-green {
+            color: #64ffda;
+            text-shadow: 0 0 10px rgba(100, 255, 218, 0.5);
+        }
+
+        /* Pulsing critical value */
+        @keyframes blinkVal {
+
+            0%,
+            100% {
+                opacity: 1
+            }
+
+            50% {
+                opacity: 0.35
+            }
+        }
+
+        .blink-critical {
+            animation: blinkVal 0.8s linear infinite;
+        }
+
+        .pulse-ring {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #64ffda;
+            animation: pulsate 2s ease-out infinite;
+            opacity: 0.8;
+        }
+
+        @keyframes pulsate {
+            0% {
+                transform: scale(1);
+                opacity: 1
+            }
+
+            100% {
+                transform: scale(3);
+                opacity: 0
+            }
+        }
+
+        .terminal-log {
+            background: #020b14;
+            border: 1px solid #1d2d44;
+            border-radius: 12px;
+            padding: 15px;
+            overflow-y: auto;
+        }
+
+        .terminal-entry {
+            border-bottom: 1px dashed rgba(100, 255, 218, 0.1);
+            padding: 5px 0;
+            font-size: 0.8rem;
+            line-height: 1.5;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            background-color: #112240;
+            border-radius: 999px;
+            height: 10px;
+            overflow: hidden;
+            margin-top: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .progress-bar {
+            height: 100%;
+            border-radius: 999px;
+            transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Map */
+        .map-container {
+            position: relative;
+            background: #020b14;
+            border-radius: 16px;
+            border: 1px solid #1d2d44;
+            height: 420px;
+            overflow: hidden;
+            background-image: radial-gradient(rgba(100, 255, 218, 0.08) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        /* ===== تعديل حركة المياه لتصبح من الجنوب (أسفل) للشمال (أعلى) ===== */
+        .river-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            stroke: #00d2ff;
+            fill: none;
+            stroke-width: 6;
+            opacity: 0.5;
+            stroke-dasharray: 12 4;
+            animation: dash 20s linear infinite;
+        }
+
+        @keyframes dash {
+            to {
+                stroke-dashoffset: -160
+            }
+        }
+
+        .map-node {
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            background: #64ffda;
+            border-radius: 50%;
+            cursor: pointer;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 18px #64ffda;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .map-node:hover,
+        .map-node.active-node {
+            transform: translate(-50%, -50%) scale(1.6);
+            background: #f39c12;
+            box-shadow: 0 0 22px #f39c12;
+        }
+
+        .map-node::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: -6px;
+            right: -6px;
+            bottom: -6px;
+            border-radius: 50%;
+            border: 2px solid #64ffda;
+            animation: ping-slow 2s infinite;
+        }
+
+        .map-node.active-node::before {
+            border-color: #f39c12;
+        }
+
+        .map-node.node-warn {
+            background: #f39c12;
+            box-shadow: 0 0 18px #f39c12;
+        }
+
+        .map-node.node-crit {
+            background: #ef4444;
+            box-shadow: 0 0 22px #ef4444;
+            animation: blinkVal 0.8s linear infinite;
+        }
+
+        /* WQI Gauge */
+        .wqi-ring {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        /* Data table */
+        .data-table th {
+            background: rgba(100, 255, 218, 0.08);
+            color: #64ffda;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 10px 14px;
+        }
+
+        .data-table td {
+            padding: 10px 14px;
+            font-size: 0.83rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .data-table tr:hover td {
+            background: rgba(100, 255, 218, 0.04);
+        }
+
+        /* Team */
+        .team-img-wrapper {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            padding: 3px;
+            background: linear-gradient(to right, #64ffda, #00d2ff);
+            margin: 0 auto 15px;
+        }
+
+        .team-img-wrapper.dev {
+            background: linear-gradient(to right, #64ffda, #00d2ff);
+        }
+
+        .team-img-wrapper.data {
+            background: linear-gradient(to right, #c084fc, #8b5cf6);
+        }
+
+        .team-img-wrapper.search {
+            background: linear-gradient(to right, #f39c12, #e67e22);
+        }
+
+        .team-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            background-color: #0a192f;
+            border: 3px solid #020b14;
+        }
+
+        .section-divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 3rem 0;
+            color: #1d2d44;
+        }
+
+        .section-divider::before,
+        .section-divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid rgba(100, 255, 218, 0.2);
+        }
+
+        .section-divider:not(:empty)::before {
+            margin-left: 1rem;
+        }
+
+        .section-divider:not(:empty)::after {
+            margin-right: 1rem;
+        }
+
+        .sensor-card-alert {
+            border-color: rgba(239, 68, 68, 0.6) !important;
+            box-shadow: 0 0 18px rgba(239, 68, 68, 0.25);
+        }
+
+        .sensor-card-warn {
+            border-color: rgba(243, 156, 18, 0.6) !important;
+            box-shadow: 0 0 18px rgba(243, 156, 18, 0.2);
+        }
+
+        .node-popup {
+            position: absolute;
+            background: rgba(2, 11, 20, 0.95);
+            border: 1px solid rgba(100, 255, 218, 0.3);
+            border-radius: 12px;
+            padding: 10px 14px;
+            min-width: 180px;
+            z-index: 50;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+            backdrop-filter: blur(8px);
+        }
+
+        .node-popup.visible {
+            opacity: 1;
+        }
+
+        .health-bar-bg {
+            width: 100%;
+            height: 6px;
+            background: #1d2d44;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .health-bar-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.5s;
+        }
+
+        @keyframes emergencyPulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 5px rgba(239, 68, 68, 0.5);
+            }
+
+            50% {
+                box-shadow: 0 0 25px rgba(239, 68, 68, 0.9);
+            }
+        }
+
+        .emergency-pulse {
+            animation: emergencyPulse 1s ease-in-out infinite;
+        }
+
+        @keyframes dronefly {
+            0% {
+                transform: translateX(-100%) translateY(0);
+                opacity: 0;
+            }
+
+            50% {
+                transform: translateX(0) translateY(-10px);
+            }
+
+            100% {
+                transform: translateX(100%) translateY(0);
+                opacity: 0;
+            }
+        }
+
+        .drone-anim {
+            animation: dronefly 2s ease-in-out forwards;
+        }
+
+        .tool-card {
+            background: rgba(17, 34, 64, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(100, 255, 218, 0.15);
+            border-radius: 20px;
+            padding: 2rem;
+            transition: all 0.4s;
+        }
+
+        .tool-card:hover {
+            border-color: rgba(100, 255, 218, 0.35);
+            transform: translateY(-2px);
+        }
+
+        .stat-card-glow {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card-glow::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(transparent, rgba(100, 255, 218, 0.05), transparent 30%);
+            animation: rotate 4s linear infinite;
+        }
+
+        @keyframes rotate {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .tti-overlay {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px dashed rgba(239, 68, 68, 0.5);
+            border-radius: 12px;
+            padding: 8px 16px;
+        }
+
+        .map-node.node-plastic {
+            background: #8b5cf6;
+            box-shadow: 0 0 18px #8b5cf6;
+        }
+
+        .map-node.node-plastic::before {
+            border-color: #8b5cf6;
+        }
+    </style>
+</head>
+
+<body class="antialiased flex flex-col min-h-screen">
+    <!-- ===== HEADER ===== -->
+    <header class="bg-nile-dark border-b border-nile-card py-6 px-6 relative z-50 shadow-2xl overflow-hidden">
+        <div
+            class="absolute top-0 right-0 w-64 h-64 bg-nile-cyan/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3">
+        </div>
+        <div
+            class="absolute bottom-0 left-0 w-64 h-64 bg-nile-blue/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/3">
+        </div>
+        <div class="container mx-auto flex flex-col md:flex-row justify-between items-center gap-6 relative z-10">
+            <div class="flex-shrink-0 flex items-center justify-center">
+                <img src="./logo.jpg" alt="شعار جامعة دمنهور"
+                    class="h-20 md:h-24 w-auto max-w-[250px] object-contain rounded-xl shadow-lg border border-nile-cyan/20 bg-black/40 p-1"
+                    onerror="this.src='https://via.placeholder.com/250x100?text=Damanhour+University'">
+            </div>
+            <div class="text-center flex-grow space-y-3">
+                <div>
+                    <h2 class="text-2xl md:text-3xl font-black text-white tracking-wide drop-shadow-md">جامعة دمنهور -
+                        كلية الهندسة</h2>
+                    <h3
+                        class="text-md md:text-lg gradient-text font-bold mt-2 inline-block px-4 py-1 bg-nile-light/50 rounded-full border border-nile-cyan/20">
+                        مشروع بحثي: استدامة مياه النيل والحلول الذكية</h3>
+                </div>
+                <div class="flex flex-wrap justify-center gap-2 md:gap-4 text-xs md:text-sm text-gray-300 mt-4">
+                    <div
+                        class="bg-nile-light/80 px-4 py-2 rounded-lg border border-nile-card shadow-sm flex items-center gap-2">
+                        <i class="fa-solid fa-building-columns text-nile-cyan"></i><span>رئيس الجامعة: <strong
+                                class="text-white">أ.د. إلهامي ترابيس</strong></span>
+                    </div>
+                    <div
+                        class="bg-nile-light/80 px-4 py-2 rounded-lg border border-nile-card shadow-sm flex items-center gap-2">
+                        <i class="fa-solid fa-user-tie text-nile-cyan"></i><span>عميد الكلية: <strong
+                                class="text-white">أ.د. محمد خيرت</strong></span>
+                    </div>
+                    <div
+                        class="bg-nile-light/80 px-4 py-2 rounded-lg border border-nile-card shadow-sm flex items-center gap-2">
+                        <i class="fa-solid fa-chalkboard-user text-nile-cyan"></i><span>إشراف: <strong
+                                class="text-white">أ.م.د. عماد الحوت | د. محمد عبده</strong></span>
+                    </div>
+                </div>
+            </div>
+            <div class="flex-shrink-0 flex items-center justify-center">
+                <img src="./logo1.png" alt="شعار كلية الهندسة"
+                    class="h-20 md:h-24 w-20 md:w-24 object-contain bg-white/5 rounded-xl border border-nile-cyan/30 p-2 shadow-lg"
+                    onerror="this.src='https://via.placeholder.com/100?text=Engineering'">
+            </div>
+        </div>
+    </header>
+
+    <!-- ===== NAV (8 Tabs) ===== -->
+    <nav class="bg-nile-base/95 backdrop-blur-xl sticky top-0 z-40 border-b border-nile-card shadow-lg">
+        <div class="container mx-auto px-4 py-2 flex items-center gap-4">
+            <div class="flex items-center gap-3 animate-float shrink-0 hidden lg:flex border-l border-nile-card pl-4">
+                <div
+                    class="w-10 h-10 bg-nile-light rounded-xl border border-nile-cyan flex items-center justify-center text-nile-cyan text-xl shadow-[0_0_10px_rgba(100,255,218,0.4)]">
+                    <i class="fa-solid fa-water"></i>
+                </div>
+                <div class="flex flex-col text-left" dir="ltr">
+                    <h1 class="text-xl font-black text-white tracking-widest leading-none">DECA</h1>
+                    <span class="text-[8.5px] text-nile-cyan font-bold opacity-80 whitespace-nowrap mt-1">(Damanhour
+                        Engineering Cyber-Aqua)</span>
+                </div>
+            </div>
+            <div class="nav-container flex-grow flex items-center gap-2 py-1">
+                <a class="nav-btn active" data-target="home"><i class="fa-solid fa-chart-pie"></i> الأزمة المائية</a>
+                <a class="nav-btn" data-target="rationalization_treatment"><i class="fa-solid fa-recycle"></i> الترشيد
+                    والمعالجة</a>
+                <a class="nav-btn" data-target="pollution"><i class="fa-solid fa-biohazard"></i> التلوث البيئي</a>
+                <a class="nav-btn" data-target="laws"><i class="fa-solid fa-scale-balanced"></i> الإطار التشريعي</a>
+                <a class="nav-btn text-nile-blue" data-target="iot_ai"><i class="fa-solid fa-network-wired"></i> IoT &
+                    AI</a>
+                <a class="nav-btn bg-nile-cyan/10 border border-nile-cyan/50 text-nile-cyan shadow-[0_0_10px_rgba(100,255,218,0.2)]"
+                    data-target="simulator"><i class="fa-solid fa-desktop"></i> Simulator </a>
+                <a class="nav-btn text-nile-accent" data-target="roadmap_refs"><i
+                        class="fa-solid fa-map-location-dot"></i> التوصيات والمراجع</a>
+                <a class="nav-btn text-purple-400 border border-purple-400/30" data-target="team"><i
+                        class="fa-solid fa-users"></i> Team </a>
+                <a class="nav-btn text-nile-emerald border border-nile-emerald/30" data-target="tools"><i
+                        class="fa-solid fa-toolbox"></i> الأدوات التفاعلية</a>
+                <a class="nav-btn text-nile-blue border border-nile-blue/30" data-target="adv_stats"><i
+                        class="fa-solid fa-chart-column"></i> الإحصائيات المتقدمة</a>
+            </div>
+        </div>
+    </nav>
+
+
+    <!-- ===== MAIN ===== -->
+    <main class="flex-grow container mx-auto px-4 py-8">
+
+        <!-- ============================================================ -->
+        <!-- 1. HOME: Water Crisis                                         -->
+        <!-- ============================================================ -->
+        <section id="home" class="spa-section active">
+            <div class="text-center py-6 px-4">
+                <h2 class="text-4xl md:text-5xl font-black mb-4 text-white leading-tight">واقع الميزان المائي المصري
+                </h2>
+                <p class="text-lg text-gray-400 max-w-4xl mx-auto mb-10 leading-relaxed">تواجه مصر تحدياً وجودياً مع
+                    تراجع حصة الفرد وثبات الموارد المائية الأساسية عند <strong class="text-nile-cyan">55.5 مليار
+                        م³</strong> مقابل طلب متزايد يتجاوز <strong class="text-red-400">114 مليار م³</strong> سنوياً،
+                    مما يضعنا تحت خط الندرة المائية الحادة.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 text-right mb-8">
+                    <div
+                        class="glass-card p-6 col-span-1 lg:col-span-2 relative overflow-hidden group border-t-4 border-t-red-500">
+                        <div
+                            class="absolute top-0 right-0 w-full h-full bg-gradient-to-l from-red-500/10 to-transparent opacity-0 group-hover:opacity-100 transition duration-500">
+                        </div>
+                        <div class="flex justify-between items-start relative z-10">
+                            <div>
+                                <p class="text-red-400 font-bold text-sm mb-2"><i
+                                        class="fa-solid fa-arrow-trend-down mr-1"></i> نصيب الفرد من المياه (عتبة الفقر
+                                    1000 م³)</p>
+                                <h4 class="text-5xl font-black text-white mb-2">490 <span
+                                        class="text-xl text-gray-400 font-normal">م³ / سنوياً</span></h4>
+                                <p class="text-sm text-gray-400 leading-relaxed max-w-md mt-3">انخفض من <strong
+                                        class="text-white">2526 م³</strong> في عام 1947 إلى حوالي <strong
+                                        class="text-red-400">490 م³</strong> للفترة 2025-2026، مما يصنف مصر رسمياً تحت
+                                    حد الشح المطلق (Absolute Scarcity).</p>
+                            </div>
+                            <div
+                                class="w-16 h-16 rounded-2xl bg-red-500/10 border border-red-500/30 flex items-center justify-center text-red-400 text-3xl shrink-0">
+                                <i class="fa-solid fa-person-drowning"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="glass-card p-6 flex flex-col justify-center border-t-4 border-t-nile-accent">
+                        <i class="fa-solid fa-droplet-slash text-3xl text-nile-accent mb-3 opacity-80"></i>
+                        <p class="text-sm text-gray-400 mb-1 font-bold">العجز المائي الصريح</p>
+                        <h4 class="text-3xl font-bold text-white mb-1">54 <span class="text-base text-gray-500">مليار
+                                م³</span></h4>
+                        <p class="text-[11px] text-gray-500 mt-2">الفجوة الإجمالية بين الطلب والمتاح الفعلي، تُسد جزئياً
+                            بإعادة تدوير الصرف الزراعي.</p>
+                    </div>
+                    <div class="glass-card p-6 flex flex-col justify-center border-t-4 border-t-blue-400">
+                        <i class="fa-solid fa-ship text-3xl text-blue-400 mb-3 opacity-80"></i>
+                        <p class="text-sm text-gray-400 mb-1 font-bold">المياه الافتراضية</p>
+                        <h4 class="text-3xl font-bold text-white mb-1">21+ <span class="text-base text-gray-500">مليار
+                                م³</span></h4>
+                        <p class="text-[11px] text-gray-500 mt-2">عجز يُسد عن طريق استيراد السلع الغذائية (Virtual
+                            Water).</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="glass-card p-6 lg:col-span-2 relative overflow-hidden">
+                        <div class="flex justify-between items-center mb-6 border-b border-nile-card pb-4">
+                            <h3 class="text-lg font-bold text-white"><i
+                                    class="fa-solid fa-chart-area text-nile-cyan ml-2"></i> الانحدار التاريخي لنصيب
+                                الفرد مقارنة بالنمو السكاني</h3>
+                        </div>
+                        <div style="position:relative;height:300px;width:100%">
+                            <canvas id="popWaterChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="glass-card p-6 relative overflow-hidden flex flex-col">
+                        <div class="flex justify-between items-center mb-6 border-b border-nile-card pb-4">
+                            <h3 class="text-lg font-bold text-white"><i
+                                    class="fa-solid fa-chart-pie text-nile-emerald ml-2"></i> توزيع الاستهلاك المائي
+                            </h3>
+                        </div>
+                        <div class="flex-grow flex items-center justify-center relative" style="height:250px">
+                            <canvas id="usagePieChart"></canvas>
+                        </div>
+                        <p class="text-xs text-center text-gray-500 mt-4">الزراعة تستنزف <strong
+                                class="text-nile-emerald">76.91%</strong> من الموارد — مما يعظم أهمية الري الحديث.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 2. RATIONALIZATION & TREATMENT                                -->
+        <!-- ============================================================ -->
+        <section id="rationalization_treatment" class="spa-section">
+            <div class="py-6">
+                <div class="text-center mb-10">
+                    <h2 class="text-4xl font-black text-white mb-3">ترشيد الاستهلاك والمشروعات <span
+                            class="gradient-text">القومية</span></h2>
+                    <p class="text-gray-400">استراتيجية تقليل الفواقد وتعظيم الاستفادة الاقتصادية والزراعية.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <!-- Irrigation -->
+                    <div class="glass-card p-8 flex flex-col">
+                        <div class="flex items-center gap-4 mb-6">
+                            <div
+                                class="w-14 h-14 rounded-2xl bg-nile-emerald/10 flex items-center justify-center text-nile-emerald text-3xl border border-nile-emerald/20">
+                                <i class="fa-solid fa-seedling"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl font-bold text-white">الزراعة الذكية ونظم الري الحديثة</h3>
+                                <p class="text-sm text-nile-emerald mt-1">قرار وزاري 1470/2023 بالإلزام</p>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-300 mb-4 leading-relaxed">تحويل ملايين الأفدنة من الغمر إلى التنقيط
+                            والرش، مع دمج تقنيات IoT وحساسات الرطوبة. النتائج الفعلية (2025): توفير <strong
+                                class="text-nile-emerald">3-5 مليار م³/سنة</strong> عند اكتمال التحويل مع زيادة إنتاجية
+                            الفدان بنسبة 25%.</p>
+                        <div class="flex-grow relative" style="height:200px">
+                            <canvas id="efficiencyBarChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Canal Lining -->
+                    <div class="glass-card p-8">
+                        <div class="flex items-center gap-4 mb-6">
+                            <div
+                                class="w-14 h-14 rounded-2xl bg-nile-blue/10 flex items-center justify-center text-nile-blue text-3xl border border-nile-blue/20">
+                                <i class="fa-solid fa-water"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl font-bold text-white">المشروع القومي لتبطين الترع</h3>
+                                <p class="text-sm text-nile-blue mt-1">الحد من الفواقد عبر التسرب الترابي</p>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-300 mb-4 leading-relaxed">تكلفة الكيلومتر الواحد: <span
+                                class="text-nile-cyan font-bold">3 ملايين جنيه</span>. الجدوى الاقتصادية (BCR) تتخطى
+                            الواحد الصحيح في جميع سيناريوهات الخصم (5%، 7%، 10%).</p>
+                        <div class="grid grid-cols-2 gap-4 text-center mb-5">
+                            <div class="bg-nile-dark p-4 rounded-xl border border-nile-card">
+                                <h4 class="text-3xl font-black text-white mb-1">20,000 <span
+                                        class="text-sm font-normal text-gray-500">كم</span></h4>
+                                <p class="text-xs text-gray-400">الخطة القومية الإجمالية</p>
+                            </div>
+                            <div class="bg-nile-dark p-4 rounded-xl border border-nile-card">
+                                <h4 class="text-3xl font-black text-nile-emerald mb-1">5 <span
+                                        class="text-sm font-normal text-gray-500">مليار م³</span></h4>
+                                <p class="text-xs text-gray-400">الوفورات المائية المتوقعة</p>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <div class="flex justify-between text-xs mb-1"><span class="text-gray-400">الطول المنجز
+                                    فعلياً (~7,500 كم)</span><span class="text-nile-blue font-bold">37%</span></div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar bg-nile-blue" style="width:37%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs mb-1"><span class="text-gray-400">المستهدف المرحلة
+                                    القادمة (+1,600 كم)</span><span class="text-nile-emerald font-bold">+8%</span></div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar bg-nile-emerald" style="width:8%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Canal Lining Data Table -->
+                <div class="glass-card p-6 mb-6 overflow-x-auto">
+                    <h3 class="text-xl font-bold text-white mb-5 flex items-center gap-3">
+                        <i class="fa-solid fa-table text-nile-cyan"></i> إحصائيات تنفيذ مشروع تبطين الترع (2024 - 2026)
+                    </h3>
+                    <table class="data-table w-full border-collapse text-right">
+                        <thead>
+                            <tr class="text-right">
+                                <th class="rounded-r-lg">المرحلة / البيان</th>
+                                <th>الطول (كم)</th>
+                                <th>التكلفة التقريبية</th>
+                                <th>النسبة من الهدف</th>
+                                <th class="rounded-l-lg">الحالة</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-gray-300">
+                            <tr>
+                                <td class="font-semibold text-nile-cyan">الإنجاز الفعلي حتى 2024</td>
+                                <td class="font-bold text-white">~7,500</td>
+                                <td class="text-nile-accent">22.5 مليار جنيه</td>
+                                <td>
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-24 bg-nile-card rounded h-2">
+                                            <div class="bg-nile-cyan h-2 rounded" style="width:37%"></div>
+                                        </div>
+                                        <span class="text-nile-cyan font-bold">37%</span>
+                                    </div>
+                                </td>
+                                <td><span
+                                        class="px-2 py-1 rounded text-xs bg-green-500/20 text-green-400 border border-green-500/30">✔
+                                        مكتمل</span></td>
+                            </tr>
+                            <tr>
+                                <td class="font-semibold text-purple-400">قيد التنفيذ حالياً</td>
+                                <td class="font-bold text-white">6,194</td>
+                                <td class="text-nile-accent">18.6 مليار جنيه</td>
+                                <td>
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-24 bg-nile-card rounded h-2">
+                                            <div class="bg-purple-400 h-2 rounded" style="width:31%"></div>
+                                        </div>
+                                        <span class="text-purple-400 font-bold">31%</span>
+                                    </div>
+                                </td>
+                                <td><span
+                                        class="px-2 py-1 rounded text-xs bg-yellow-500/20 text-yellow-400 border border-yellow-500/30">⚙
+                                        جارٍ</span></td>
+                            </tr>
+                            <tr>
+                                <td class="font-semibold text-nile-accent">المستهدف 2025 (موازنة)</td>
+                                <td class="font-bold text-white">1,000</td>
+                                <td class="text-nile-accent">3.0 مليار جنيه</td>
+                                <td>
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-24 bg-nile-card rounded h-2">
+                                            <div class="bg-nile-accent h-2 rounded" style="width:5%"></div>
+                                        </div>
+                                        <span class="text-nile-accent font-bold">5%</span>
+                                    </div>
+                                </td>
+                                <td><span
+                                        class="px-2 py-1 rounded text-xs bg-blue-500/20 text-blue-400 border border-blue-500/30">◎
+                                        مخطط</span></td>
+                            </tr>
+                            <tr>
+                                <td class="font-semibold text-nile-accent">المستهدف 2025/2026</td>
+                                <td class="font-bold text-white">600</td>
+                                <td class="text-nile-accent">1.8 مليار جنيه</td>
+                                <td>
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-24 bg-nile-card rounded h-2">
+                                            <div class="bg-nile-accent h-2 rounded" style="width:3%"></div>
+                                        </div>
+                                        <span class="text-nile-accent font-bold">3%</span>
+                                    </div>
+                                </td>
+                                <td><span
+                                        class="px-2 py-1 rounded text-xs bg-blue-500/20 text-blue-400 border border-blue-500/30">◎
+                                        مخطط</span></td>
+                            </tr>
+                            <tr class="border-t-2 border-nile-cyan/30">
+                                <td class="font-black text-white">الإجمالي المستهدف</td>
+                                <td class="font-black text-nile-cyan">20,000</td>
+                                <td class="font-black text-nile-cyan">60 مليار جنيه+</td>
+                                <td>
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-24 bg-nile-card rounded h-2">
+                                            <div class="bg-nile-cyan h-2 rounded" style="width:100%"></div>
+                                        </div>
+                                        <span class="text-nile-cyan font-bold">100%</span>
+                                    </div>
+                                </td>
+                                <td><span
+                                        class="px-2 py-1 rounded text-xs bg-nile-cyan/20 text-nile-cyan border border-nile-cyan/30">الهدف
+                                        الكلي</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p class="text-xs text-gray-500 mt-3 text-center">* المصادر: وزارة الموارد المائية والري (2024)،
+                        مجلة AQUA للدراسات (2025)، الهيئة العامة للاستعلامات.</p>
+                </div>
+
+                <div class="section-divider"><span
+                        class="bg-nile-base px-4 text-gray-400 text-sm font-bold tracking-widest uppercase"><i
+                            class="fa-solid fa-recycle mr-2"></i> خط الدفاع الثاني: إعادة التدوير العملاق <i
+                            class="fa-solid fa-recycle ml-2"></i></span></div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+                    <!-- Bahr El Baqar -->
+                    <div
+                        class="glass-card p-8 border-t-4 border-t-purple-500 hover:border-purple-400 transition group flex flex-col">
+                        <div
+                            class="w-16 h-16 bg-purple-500/10 rounded-2xl flex items-center justify-center text-purple-400 text-3xl mb-6 group-hover:scale-110 transition duration-300">
+                            <i class="fa-solid fa-water"></i>
+                        </div>
+                        <h4 class="text-2xl font-bold text-white mb-3">محطة بحر البقر</h4>
+                        <div class="bg-nile-dark/50 p-3 rounded-lg mb-4 text-center border border-purple-500/20">
+                            <span class="block text-4xl font-black text-purple-400 mb-1">5.6<span
+                                    class="text-lg font-normal text-gray-500">M m³/day</span></span>
+                            <span class="text-xs text-gray-400">الأضخم عالمياً</span>
+                        </div>
+                        <ul class="text-sm text-gray-300 leading-relaxed space-y-2 flex-grow">
+                            <li class="flex gap-2"><i
+                                    class="fa-solid fa-check-circle text-purple-400 mt-1 shrink-0"></i> معالجة ثلاثية
+                                (فيزيائية، كيميائية، بيولوجية)</li>
+                            <li class="flex gap-2"><i
+                                    class="fa-solid fa-check-circle text-purple-400 mt-1 shrink-0"></i> 120 فلتر قرصي
+                                بفتحات 10 ميكرون + أوزون + كلور</li>
+                            <li class="flex gap-2"><i
+                                    class="fa-solid fa-check-circle text-purple-400 mt-1 shrink-0"></i> تقليل الحمل
+                                العضوي (BOD) بنسبة <strong class="text-white">95%</strong></li>
+                            <li class="flex gap-2"><i
+                                    class="fa-solid fa-check-circle text-purple-400 mt-1 shrink-0"></i> تستهدف استصلاح
+                                <strong class="text-white">456 ألف فدان</strong> في سيناء
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- El Hamam -->
+                    <div
+                        class="glass-card p-8 border-t-4 border-t-nile-cyan hover:border-nile-cyan transition group flex flex-col">
+                        <div
+                            class="w-16 h-16 bg-nile-cyan/10 rounded-2xl flex items-center justify-center text-nile-cyan text-3xl mb-6 group-hover:scale-110 transition duration-300">
+                            <i class="fa-solid fa-route"></i>
+                        </div>
+                        <h4 class="text-2xl font-bold text-white mb-3">محطة الحمام</h4>
+                        <div class="bg-nile-dark/50 p-3 rounded-lg mb-4 text-center border border-nile-cyan/20">
+                            <span class="block text-4xl font-black text-nile-cyan mb-1">7.5<span
+                                    class="text-lg font-normal text-gray-500">M m³/day</span></span>
+                            <span class="text-xs text-gray-400">لخدمة الدلتا الجديدة</span>
+                        </div>
+                        <ul class="text-sm text-gray-300 leading-relaxed space-y-2 flex-grow">
+                            <li class="flex gap-2"><i class="fa-solid fa-check-circle text-nile-cyan mt-1 shrink-0"></i>
+                                مسار ناقل بطول <strong class="text-white">174 كم</strong></li>
+                            <li class="flex gap-2"><i class="fa-solid fa-check-circle text-nile-cyan mt-1 shrink-0"></i>
+                                <strong class="text-white">12 محطة رفع</strong> عملاقة على امتداد المسار
+                            </li>
+                            <li class="flex gap-2"><i class="fa-solid fa-check-circle text-nile-cyan mt-1 shrink-0"></i>
+                                تستهدف استصلاح <strong class="text-white">مليوني فدان</strong> (مستقبل مصر)</li>
+                            <li class="flex gap-2"><i class="fa-solid fa-check-circle text-nile-cyan mt-1 shrink-0"></i>
+                                معالجة ثلاثية متقدمة مطابقة للمعايير الدولية</li>
+                        </ul>
+                    </div>
+
+                    <!-- Mahsama -->
+                    <div
+                        class="glass-card p-8 border-t-4 border-t-nile-accent hover:border-nile-accent transition group flex flex-col">
+                        <div
+                            class="w-16 h-16 bg-nile-accent/10 rounded-2xl flex items-center justify-center text-nile-accent text-3xl mb-6 group-hover:scale-110 transition duration-300">
+                            <i class="fa-solid fa-award"></i>
+                        </div>
+                        <h4 class="text-2xl font-bold text-white mb-3">محطة المحسمة</h4>
+                        <div class="bg-nile-dark/50 p-3 rounded-lg mb-4 text-center border border-nile-accent/20">
+                            <span class="block text-4xl font-black text-nile-accent mb-1">1.0<span
+                                    class="text-lg font-normal text-gray-500">M m³/day</span></span>
+                            <span class="text-xs text-gray-400">مشروع العام الهندسي</span>
+                        </div>
+                        <ul class="text-sm text-gray-300 leading-relaxed space-y-2 flex-grow">
+                            <li class="flex gap-2"><i
+                                    class="fa-solid fa-check-circle text-nile-accent mt-1 shrink-0"></i> جوائز دولية
+                                كأفضل مشروع هندسي عالمياً</li>
+                            <li class="flex gap-2"><i
+                                    class="fa-solid fa-check-circle text-nile-accent mt-1 shrink-0"></i> نموذج محلي ملهم
+                                في الاستدامة المائية</li>
+                            <li class="flex gap-2"><i
+                                    class="fa-solid fa-check-circle text-nile-accent mt-1 shrink-0"></i> إعادة تدوير آمن
+                                وفق المعايير البيئية الدولية</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 3. POLLUTION                                                  -->
+        <!-- ============================================================ -->
+        <section id="pollution" class="spa-section">
+            <div class="py-6">
+                <div class="text-center mb-10">
+                    <h2 class="text-4xl font-black text-white mb-4">مصادر التلوث <span class="gradient-text">البيئي
+                            والكيميائي</span></h2>
+                    <p class="text-gray-400">التحديات المعقدة التي تتطلب رصداً لحظياً لضمان الأمن البيئي للنهر.</p>
+                </div>
+
+                <!-- Stats Strip -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                    <div class="glass-card p-4 text-center border-t-4 border-t-red-500">
+                        <div class="text-3xl font-black text-red-400 mb-1">270</div>
+                        <p class="text-xs text-gray-400">طن ملوثات صناعية/يوم</p>
+                    </div>
+                    <div class="glass-card p-4 text-center border-t-4 border-t-purple-500">
+                        <div class="text-3xl font-black text-purple-400 mb-1">14M</div>
+                        <p class="text-xs text-gray-400">طن مخلفات صلبة/سنة</p>
+                    </div>
+                    <div class="glass-card p-4 text-center border-t-4 border-t-red-600">
+                        <div class="text-3xl font-black text-red-500 mb-1">17K</div>
+                        <p class="text-xs text-gray-400">طفل وفاة سنوياً بالأمراض المعوية</p>
+                    </div>
+                    <div class="glass-card p-4 text-center border-t-4 border-t-yellow-500">
+                        <div class="text-3xl font-black text-yellow-400 mb-1">40</div>
+                        <p class="text-xs text-gray-400">نوعاً من الأسماك اختفت</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="glass-card p-6 border-r-4 border-r-red-500 flex gap-5">
+                        <div
+                            class="w-16 h-16 shrink-0 bg-red-500/10 rounded-full flex items-center justify-center text-red-500 text-3xl">
+                            <i class="fa-solid fa-industry"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-white mb-2">التلوث الصناعي (270 طن/يوم)</h3>
+                            <p class="text-sm text-gray-400 leading-relaxed">دراسة دقيقة بمحافظة أسوان أثبتت أن مصانع
+                                <strong class="text-white">الورق، السكر، والفيروسيليكون</strong> تضخ تركيزات مرتفعة من
+                                الطلب الكيميائي (COD = 59.6 مجم/لتر)، والطلب البيولوجي (BOD = 36.5 مجم/لتر)، بالإضافة
+                                للمعادن الثقيلة (رصاص، زئبق، كروم) الناجمة عن الصرف غير المعالج.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-6 border-r-4 border-r-yellow-500 flex gap-5">
+                        <div
+                            class="w-16 h-16 shrink-0 bg-yellow-500/10 rounded-full flex items-center justify-center text-yellow-500 text-3xl">
+                            <i class="fa-solid fa-flask"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-white mb-2">الصرف الزراعي (الإثراء الغذائي)</h3>
+                            <p class="text-sm text-gray-400 leading-relaxed">تسرب كميات مهولة من النترات والأسمدة
+                                الفوسفاتية وبقايا المبيدات يسبب ظاهرة <strong
+                                    class="text-white">(Eutrophication)</strong> التي تستنزف الأكسجين الذائب (DO) وتهلك
+                                الحياة المائية. كما تتسبب في نمو الطحالب الخانقة (Algal Blooms).</p>
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-6 border-r-4 border-r-nile-plastic flex gap-5">
+                        <div
+                            class="w-16 h-16 shrink-0 bg-nile-plastic/10 rounded-full flex items-center justify-center text-nile-plastic text-3xl">
+                            <i class="fa-solid fa-bottle-water"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-white mb-2">النفايات الصلبة (14 مليون طن/سنة)</h3>
+                            <p class="text-sm text-gray-400 leading-relaxed">تتحلل المخلفات لمركبات دقيقة <strong
+                                    class="text-white">(Microplastics)</strong> تدخل في السلسلة الغذائية
+                                (Bioaccumulation)، مما أدى لاختفاء نحو <strong class="text-purple-400">40 نوعاً</strong>
+                                من الأسماك النيلية. نماذج AI (YOLOv8) على الكباري تُستخدم الآن لرصد هذا التدفق.</p>
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-6 border-r-4 border-r-green-500 flex gap-5">
+                        <div
+                            class="w-16 h-16 shrink-0 bg-green-500/10 rounded-full flex items-center justify-center text-green-500 text-3xl">
+                            <i class="fa-solid fa-bacteria"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-white mb-2">الملوثات البيولوجية والبلدية</h3>
+                            <p class="text-sm text-gray-400 leading-relaxed">الصرف الصحي غير المعالج والبيوت العائمة
+                                يرفع نسب بكتيريا <strong class="text-white">(E.coli)</strong>، متسبباً في أوبئة معوية
+                                حصدت أرواح نحو <strong class="text-red-400">17 ألف طفل</strong> سنوياً. المواد الصلبة
+                                العالقة (TSS) وصلت لـ 13.1 مجم/لتر في بعض المواقع.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 4. LAWS                                                       -->
+        <!-- ============================================================ -->
+        <section id="laws" class="spa-section">
+            <div class="py-6">
+                <div class="text-center mb-10">
+                    <h2 class="text-4xl font-black text-white mb-4">الترسانة <span class="gradient-text">التشريعية
+                            المصرية</span></h2>
+                    <p class="text-gray-400">الإطار القانوني الصارم لحماية المجاري المائية وردع التعديات والتلوث.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto mb-8">
+                    <!-- Law 48 / 1982 -->
+                    <div
+                        class="bg-[#0a192f] p-8 rounded-3xl border border-nile-cyan/30 relative overflow-hidden group hover:border-nile-cyan transition duration-300 shadow-[0_0_20px_rgba(100,255,218,0.05)]">
+                        <i
+                            class="fa-solid fa-gavel text-[150px] text-nile-cyan/5 absolute -top-10 -left-10 group-hover:scale-110 transition duration-500"></i>
+                        <div class="relative z-10">
+                            <div class="flex items-center gap-4 mb-6 border-b border-nile-card pb-4">
+                                <span
+                                    class="w-16 h-16 bg-nile-cyan/10 rounded-2xl flex items-center justify-center text-3xl text-nile-cyan font-bold shadow-inner">82</span>
+                                <div>
+                                    <h4 class="text-2xl font-bold text-nile-cyan">قانون 48 لسنة 1982</h4>
+                                    <p class="text-xs text-gray-400 mt-1">المنظم الأساسي لحماية النيل (معدَّل 2015)</p>
+                                </div>
+                            </div>
+                            <ul class="space-y-4 text-sm text-gray-300 leading-relaxed">
+                                <li class="flex items-start gap-3"><i
+                                        class="fa-solid fa-chevron-left text-nile-cyan mt-1"></i><span><strong
+                                            class="text-white">المادة 2:</strong> حظر تام لصرف أي مخلفات (صلبة، سائلة،
+                                        غازية) في المجاري المائية للمنشآت دون ترخيص مسبق من وزارة الري.</span></li>
+                                <li class="flex items-start gap-3"><i
+                                        class="fa-solid fa-chevron-left text-nile-cyan mt-1"></i><span><strong
+                                            class="text-white">المادة 3:</strong> إلزام وزارة الصحة بإجراء تحاليل دورية
+                                        لعينات الصرف للتحقق من خلوها من السميات، وسحب الترخيص فوراً عند المخالفة.</span>
+                                </li>
+                                <li class="flex items-start gap-3"><i
+                                        class="fa-solid fa-chevron-left text-nile-cyan mt-1"></i><span><strong
+                                            class="text-white">المادة 7:</strong> حظر تسرب الوقود والزيوت من الوحدات
+                                        النهرية المتحركة (السفن، الفنادق العائمة، البيوت القوارب).</span></li>
+                                <li class="flex items-start gap-3"><i
+                                        class="fa-solid fa-chevron-left text-nile-cyan mt-1"></i><span><strong
+                                            class="text-white">تعديلات 2015:</strong> إدراج الفنادق العائمة ضمن المنشآت
+                                        الملزمة بنظام معالجة المخلفات قبل التصريف.</span></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Law 147 / 2021 -->
+                    <div
+                        class="bg-[#0a192f] p-8 rounded-3xl border border-nile-accent/30 relative overflow-hidden group hover:border-nile-accent transition duration-300 shadow-[0_0_20px_rgba(243,156,18,0.05)]">
+                        <i
+                            class="fa-solid fa-scale-balanced text-[150px] text-nile-accent/5 absolute -top-10 -left-10 group-hover:scale-110 transition duration-500"></i>
+                        <div class="relative z-10">
+                            <div class="flex items-center gap-4 mb-6 border-b border-nile-card pb-4">
+                                <span
+                                    class="w-16 h-16 bg-nile-accent/10 rounded-2xl flex items-center justify-center text-3xl text-nile-accent font-bold shadow-inner">21</span>
+                                <div>
+                                    <h4 class="text-2xl font-bold text-nile-accent">قانون 147 لسنة 2021</h4>
+                                    <p class="text-xs text-gray-400 mt-1">قانون الموارد المائية والري المحدَّث</p>
+                                </div>
+                            </div>
+                            <ul class="space-y-4 text-sm text-gray-300 leading-relaxed">
+                                <li class="flex items-start gap-3"><i
+                                        class="fa-solid fa-chevron-left text-nile-accent mt-1"></i><span><strong
+                                            class="text-white">حرم النهر:</strong> تحديد الحرم بمسافة 80 متراً من خط
+                                        التهذيب، مع حظر البناء أو ممارسة أنشطة ملوثة تماماً.</span></li>
+                                <li class="flex items-start gap-3"><i
+                                        class="fa-solid fa-chevron-left text-nile-accent mt-1"></i><span><strong
+                                            class="text-white">تغليظ العقوبات:</strong> فرض غرامات تصل لـ 200 ألف جنيه،
+                                        والسجن، ومضاعفتها في حالة العودة للمخالفة.</span></li>
+                                <li class="flex items-start gap-3"><i
+                                        class="fa-solid fa-chevron-left text-nile-accent mt-1"></i><span><strong
+                                            class="text-white">المادة 85 (حوكمة صناعية):</strong> ربط تراخيص المصانع
+                                        بوجود محطات معالجة داخلية مزودة بنظام مراقبة مستمر متصل بوزارة الري.</span></li>
+                                <li class="flex items-start gap-3"><i
+                                        class="fa-solid fa-chevron-left text-nile-accent mt-1"></i><span><strong
+                                            class="text-white">سلطة الإزالة:</strong> حق أصيل للوزارة بإزالة أسباب
+                                        المخالفة "إدارياً" وفورياً على نفقة المخالف.</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Extra laws -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+                    <div class="bg-nile-dark p-6 rounded-2xl border border-purple-500/30 flex items-start gap-4">
+                        <div
+                            class="w-14 h-14 shrink-0 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center text-2xl font-bold">
+                            20</div>
+                        <div>
+                            <h4 class="text-lg font-bold text-purple-300 mb-2">قانون 202 لسنة 2020 — إدارة المخلفات</h4>
+                            <p class="text-sm text-gray-400 leading-relaxed">ينظم إدارة النفايات الصلبة والبلاستيك،
+                                ويُجرّم إلقاءها في المجاري المائية بعقوبات مشددة تشمل السجن لمدة تصل لـ 5 سنوات وغرامات
+                                مالية.</p>
+                        </div>
+                    </div>
+                    <div class="bg-nile-dark p-6 rounded-2xl border border-green-500/30 flex items-start gap-4">
+                        <div
+                            class="w-14 h-14 shrink-0 rounded-xl bg-green-500/10 text-green-400 flex items-center justify-center text-2xl font-bold">
+                            94</div>
+                        <div>
+                            <h4 class="text-lg font-bold text-green-300 mb-2">قانون 4 لسنة 1994 — البيئة وتعديلاته</h4>
+                            <p class="text-sm text-gray-400 leading-relaxed">يُجرّم تصريف النفايات الصناعية وإلقاء مواد
+                                ضارة في النيل، ويلزم المنشآت باستصدار تقارير الأثر البيئي قبل مزاولة النشاط.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 5. IoT / AI ARCHITECTURE                                     -->
+        <!-- ============================================================ -->
+        <section id="iot_ai" class="spa-section">
+            <div class="py-6">
+                <div class="text-center mb-10">
+                    <h2 class="text-4xl font-black text-white mb-3"> <span class="gradient-text">الرصد الهندسي (IoT)
+                            والذكاء الاصطناعي</span></h2>
+                    <p class="text-gray-400">البنية التقنية المتكاملة من قاع النهر وحتى المراقبة الفضائية.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto mb-10">
+                    <div
+                        class="glass-card p-8 border-t-4 border-t-nile-cyan hover:-translate-y-2 transition duration-300 relative overflow-hidden">
+                        <div class="text-5xl text-nile-cyan mb-6 opacity-80"><i class="fa-solid fa-microchip"></i></div>
+                        <h3 class="text-xl font-bold text-white mb-3">1. طبقة الإدراك (Sensing)</h3>
+                        <p class="text-sm text-gray-400 leading-relaxed mb-4">العقد الاستشعارية المغمورة تقيس: pH، DO،
+                            EC، Turbidity، TDS، Temp، ونيترات وفوسفات.</p>
+                        <div class="bg-nile-dark p-3 rounded border border-nile-card">
+                            <h4 class="text-xs font-bold text-nile-cyan mb-1">الحساسات الحيوية (Biosensors)</h4>
+                            <p class="text-[11px] text-gray-400">تعتمد على محولات طاقة إنزيمية لكشف المعادن الثقيلة
+                                والبكتيريا خلال أقل من 5 دقائق. التكلفة: 300-3500 دولار لكل وحدة.</p>
+                        </div>
+                    </div>
+                    <div
+                        class="glass-card p-8 border-t-4 border-t-purple-400 hover:-translate-y-2 transition duration-300">
+                        <div class="text-5xl text-purple-400 mb-6 opacity-80"><i class="fa-solid fa-wifi"></i></div>
+                        <h3 class="text-xl font-bold text-white mb-3">2. طبقة النقل (Network)</h3>
+                        <p class="text-sm text-gray-400 leading-relaxed mb-4">تتجاوز ضعف البنية التحتية في المناطق
+                            الريفية عبر بروتوكولات اتصال منخفضة الطاقة.</p>
+                        <div class="bg-nile-dark p-3 rounded border border-nile-card mb-2">
+                            <h4 class="text-xs font-bold text-purple-400 mb-1">LoRaWAN — مدى 10-15 كم</h4>
+                            <p class="text-[11px] text-gray-400">إشارة قوتها 94 dBm- تستهلك حداً أدنى من الطاقة. NB-IoT
+                                للمناطق ذات تغطية 4G. 5G للمنشآت الحضرية.</p>
+                        </div>
+                    </div>
+                    <div
+                        class="glass-card p-8 border-t-4 border-t-nile-accent hover:-translate-y-2 transition duration-300">
+                        <div class="text-5xl text-nile-accent mb-6 opacity-80"><i class="fa-solid fa-server"></i></div>
+                        <h3 class="text-xl font-bold text-white mb-3">3. طبقة السحابة (Cloud)</h3>
+                        <p class="text-sm text-gray-400 leading-relaxed mb-4">معالجة البيانات الضخمة سحابياً وإدارتها
+                            عبر لوحات تحكم Web-GIS لمتخذي القرار.</p>
+                        <div class="bg-nile-dark p-3 rounded border border-nile-card">
+                            <h4 class="text-xs font-bold text-nile-accent mb-1">الإنذار الآلي (خلال 30 ثانية)</h4>
+                            <p class="text-[11px] text-gray-400">تحليل الأنماط وكشف الشذوذ (XGBoost) للتنبؤ بمسارات
+                                التلوث وإصدار أوامر إغلاق أوتوماتيكية لمآخذ محطات الشرب.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-divider"><span
+                        class="bg-nile-base px-4 text-gray-400 text-sm font-bold tracking-widest uppercase"><i
+                            class="fa-solid fa-eye mr-2"></i> المراقبة والرؤية الحاسوبية <i
+                            class="fa-solid fa-eye ml-2"></i></span></div>
+
+                <div
+                    class="glass-card p-10 flex flex-col justify-center relative overflow-hidden group max-w-5xl mx-auto mt-6">
+                    <div
+                        class="absolute left-0 bottom-0 opacity-[0.03] text-[250px] text-white group-hover:scale-110 transition duration-700 pointer-events-none translate-y-16 -translate-x-16">
+                        <i class="fa-solid fa-satellite"></i>
+                    </div>
+                    <div class="space-y-10 relative z-10">
+                        <div class="flex gap-6 items-start">
+                            <div
+                                class="w-16 h-16 shrink-0 bg-nile-dark rounded-2xl border border-nile-blue/30 flex items-center justify-center text-3xl text-nile-blue shadow-lg">
+                                <i class="fa-solid fa-satellite-dish"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-white text-xl mb-2">الأقمار الصناعية (Sentinel-2 & SRIs)</h4>
+                                <p class="text-sm text-gray-400 leading-relaxed">تُستخدم صور الأقمار الصناعية متعددة
+                                    الأطياف لاستخراج مؤشرات الانعكاس الطيفي (SRIs) لتقدير مستويات المواد العالقة (TSS)
+                                    والكلوروفيل والعكارة بدقة 80-90%، وتتبع التعديات على حرم النهر وتقديم خريطة حرارية
+                                    جغرافية.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-6 items-start">
+                            <div
+                                class="w-16 h-16 shrink-0 bg-nile-dark rounded-2xl border border-nile-emerald/30 flex items-center justify-center text-3xl text-nile-emerald shadow-lg">
+                                <i class="fa-solid fa-camera"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-white text-xl mb-2">كاميرات الكباري ونماذج (YOLOv8)</h4>
+                                <p class="text-sm text-gray-400 leading-relaxed">نماذج ذكاء اصطناعي للرؤية الحاسوبية
+                                    تعمل على كاميرات الكباري؛ مهمتها التقاط ورصد وتصنيف النفايات البلاستيكية
+                                    (Macroplastics) العائمة آلياً لتقدير حجم التدفق التلوثي نحو البحر المتوسط. نُشرت
+                                    أبحاثها في Frontiers (2025).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 6. SCADA SIMULATOR                                            -->
+        <!-- ============================================================ -->
+        <section id="simulator" class="spa-section">
+            <div class="py-6">
+                <div class="flex flex-col md:flex-row justify-between items-end mb-8 border-b border-nile-card pb-4">
+                    <div>
+                        <h2 class="text-3xl font-black text-white flex items-center gap-3">
+                            <i class="fa-solid fa-network-wired text-nile-cyan"></i> DECA SCADA &amp; Web-GIS — EWS v2
+                        </h2>
+                        <p class="text-sm mt-2 text-gray-400">محاكاة تفاعلية لنظام الإنذار المبكر (EWS) المتصل بشبكة
+                            LoRaWAN — اضغط على عقدة لتغيير القيم المعروضة.</p>
+                    </div>
+                    <div class="mt-4 md:mt-0 flex items-center gap-3">
+                        <span id="sys-status-badge"
+                            class="text-xs px-3 py-1 rounded font-bold border border-green-500/30 bg-green-500/10 text-green-400">NORMAL</span>
+                        <div
+                            class="flex items-center gap-2 bg-[#020b14] px-5 py-3 rounded-xl border border-nile-cyan/30 shadow-[0_0_15px_rgba(100,255,218,0.1)]">
+                            <div class="pulse-ring relative mr-4"></div>
+                            <span class="text-nile-cyan font-mono text-sm tracking-widest font-bold">SYSTEM
+                                ONLINE</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                    <!-- MAP COLUMN -->
+                    <div class="lg:col-span-1 glass-card p-4 flex flex-col">
+                        <h4 class="text-sm font-bold text-white mb-3 uppercase tracking-wider"><i
+                                class="fa-solid fa-map text-nile-cyan mr-2"></i> الخريطة التفاعلية (Web-GIS)</h4>
+                        <div class="map-container relative w-full flex-grow" id="map-area">
+                            <svg class="river-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+                                <path d="M50,100 Q48,85 49,72 Q47,60 48,50 Q49,42 50,35" />
+                                <path d="M50,35 Q55,22 62,12 Q65,6 68,2" />
+                                <path d="M50,35 Q43,22 35,12 Q32,6 30,2" />
+                            </svg>
+
+                            <div class="map-node active-node" id="mnode-1" style="top:90%;left:50%;"
+                                onclick="selectNode(1)" onmouseenter="showPopup(1,this)" onmouseleave="hidePopup()">
+                                <div
+                                    class="absolute -top-7 right-0 text-[9px] bg-nile-dark/90 px-2 py-0.5 rounded border border-nile-cyan/20 text-nile-cyan whitespace-nowrap">
+                                    1: أسوان</div>
+                            </div>
+                            <div class="map-node" id="mnode-2" style="top:74%;left:49%;" onclick="selectNode(2)"
+                                onmouseenter="showPopup(2,this)" onmouseleave="hidePopup()">
+                                <div
+                                    class="absolute -top-7 right-0 text-[9px] bg-nile-dark/90 px-2 py-0.5 rounded border border-nile-cyan/20 text-nile-cyan whitespace-nowrap">
+                                    2: الأقصر</div>
+                            </div>
+                            <div class="map-node" id="mnode-3" style="top:56%;left:48%;" onclick="selectNode(3)"
+                                onmouseenter="showPopup(3,this)" onmouseleave="hidePopup()">
+                                <div
+                                    class="absolute -top-7 right-0 text-[9px] bg-nile-dark/90 px-2 py-0.5 rounded border border-nile-cyan/20 text-nile-cyan whitespace-nowrap">
+                                    3: أسيوط</div>
+                            </div>
+                            <div class="map-node" id="mnode-4" style="top:38%;left:50%;" onclick="selectNode(4)"
+                                onmouseenter="showPopup(4,this)" onmouseleave="hidePopup()">
+                                <div
+                                    class="absolute -top-7 right-0 text-[9px] bg-nile-dark/90 px-2 py-0.5 rounded border border-nile-cyan/20 text-nile-cyan whitespace-nowrap">
+                                    4: القناطر</div>
+                            </div>
+                            <div class="map-node" id="mnode-5" style="top:12%;left:63%;" onclick="selectNode(5)"
+                                onmouseenter="showPopup(5,this)" onmouseleave="hidePopup()">
+                                <div
+                                    class="absolute -top-7 right-0 text-[9px] bg-nile-dark/90 px-2 py-0.5 rounded border border-nile-cyan/20 text-nile-cyan whitespace-nowrap">
+                                    5: دمياط</div>
+                            </div>
+                            <div class="map-node" id="mnode-6" style="top:12%;left:33%;" onclick="selectNode(6)"
+                                onmouseenter="showPopup(6,this)" onmouseleave="hidePopup()">
+                                <div
+                                    class="absolute -top-7 right-0 text-[9px] bg-nile-dark/90 px-2 py-0.5 rounded border border-nile-cyan/20 text-nile-cyan whitespace-nowrap">
+                                    6: رشيد</div>
+                            </div>
+                            <div class="map-node" id="mnode-7" style="top:5%;left:75%;" onclick="selectNode(7)"
+                                onmouseenter="showPopup(7,this)" onmouseleave="hidePopup()">
+                                <div
+                                    class="absolute -top-7 right-0 text-[9px] bg-nile-dark/90 px-2 py-0.5 rounded border border-nile-cyan/20 text-nile-cyan whitespace-nowrap">
+                                    7: بحيرة المنزلة</div>
+                            </div>
+
+                            <div id="node-popup" class="node-popup"></div>
+
+                            <div
+                                class="absolute top-2 left-2 text-[9px] space-y-1 bg-nile-dark/80 p-2 rounded border border-nile-card">
+                                <div class="flex items-center gap-1"><span
+                                        class="w-2 h-2 rounded-full bg-nile-cyan inline-block"></span> طبيعي</div>
+                                <div class="flex items-center gap-1"><span
+                                        class="w-2 h-2 rounded-full bg-yellow-400 inline-block"></span> تحذير</div>
+                                <div class="flex items-center gap-1"><span
+                                        class="w-2 h-2 rounded-full bg-red-500 inline-block"></span> حرج</div>
+                                <div class="flex items-center gap-1"><span
+                                        class="w-2 h-2 rounded-full bg-purple-500 inline-block"></span> بلاستيك</div>
+                            </div>
+                            <div
+                                class="absolute bottom-2 right-2 text-[10px] bg-nile-dark/80 px-2 py-1 rounded text-nile-cyan font-mono border border-nile-cyan/20">
+                                GPS: ACTIVE | LoRa: 7/7</div>
+                        </div>
+
+                        <!-- WQI Gauge -->
+                        <div class="mt-4 bg-nile-dark rounded-2xl border border-nile-card p-4 text-center">
+                            <p class="text-xs text-gray-400 uppercase tracking-wider mb-2 font-bold">مؤشر جودة المياه
+                                (WQI)</p>
+                            <div class="relative inline-flex items-center justify-center"
+                                style="width:110px;height:110px">
+                                <svg viewBox="0 0 36 36" class="absolute inset-0 w-full h-full"
+                                    style="transform:rotate(-90deg)">
+                                    <circle cx="18" cy="18" r="15.9" fill="none" stroke="#1d2d44" stroke-width="3.5" />
+                                    <circle id="wqi-circle" cx="18" cy="18" r="15.9" fill="none" stroke="#64ffda"
+                                        stroke-width="3.5" stroke-dasharray="75 100" stroke-linecap="round"
+                                        class="transition-all duration-700" />
+                                </svg>
+                                <div class="flex flex-col items-center z-10">
+                                    <span id="val-wqi" class="text-3xl font-black text-nile-cyan digital-font">75</span>
+                                    <span class="text-[9px] text-gray-400 mt-0.5">/ 100</span>
+                                </div>
+                            </div>
+                            <p id="wqi-label" class="text-xs font-bold text-nile-cyan mt-2">جيد</p>
+                        </div>
+
+                        <p class="text-[11px] text-gray-500 mt-2 text-center">اضغط على العقدة لاستعراض بياناتها اللحظية.
+                        </p>
+                    </div>
+
+                    <!-- METERS + CHART + TERMINAL -->
+                    <div class="lg:col-span-2 space-y-4 flex flex-col">
+
+                        <!-- 9 Sensor Cards -->
+                        <div class="grid grid-cols-3 md:grid-cols-9 gap-2 flex-shrink-0">
+                            <div class="bg-[#020b14] p-2 rounded-2xl border border-nile-card text-center transition-all duration-300"
+                                id="card-ph">
+                                <p class="text-[9px] text-gray-400 uppercase font-bold mb-1">pH</p>
+                                <div class="text-xl digital-font alert-green" id="val-ph">7.40</div>
+                                <p class="text-[7px] text-gray-500 mt-1">6.5–8.5</p>
+                            </div>
+                            <div class="bg-[#020b14] p-2 rounded-2xl border border-nile-card text-center transition-all duration-300"
+                                id="card-do">
+                                <p class="text-[9px] text-gray-400 uppercase font-bold mb-1">DO</p>
+                                <div class="text-xl digital-font alert-green" id="val-do">7.2</div>
+                                <p class="text-[7px] text-gray-500 mt-1">&gt;4 mg/L</p>
+                            </div>
+                            <div class="bg-[#020b14] p-2 rounded-2xl border border-nile-card text-center transition-all duration-300"
+                                id="card-tur">
+                                <p class="text-[9px] text-gray-400 uppercase font-bold mb-1">Turb</p>
+                                <div class="text-xl digital-font alert-green" id="val-tur">8.0</div>
+                                <p class="text-[7px] text-gray-500 mt-1">&lt;50 NTU</p>
+                            </div>
+                            <div class="bg-[#020b14] p-2 rounded-2xl border border-nile-card text-center transition-all duration-300"
+                                id="card-ec">
+                                <p class="text-[9px] text-gray-400 uppercase font-bold mb-1">EC</p>
+                                <div class="text-xl digital-font alert-green" id="val-ec">180</div>
+                                <p class="text-[7px] text-gray-500 mt-1">&lt;800 µS</p>
+                            </div>
+                            <div class="bg-[#020b14] p-2 rounded-2xl border border-nile-card text-center transition-all duration-300"
+                                id="card-temp">
+                                <p class="text-[9px] text-gray-400 uppercase font-bold mb-1">Temp</p>
+                                <div class="text-xl digital-font alert-green" id="val-temp">21.0</div>
+                                <p class="text-[7px] text-gray-500 mt-1">10–35°C</p>
+                            </div>
+                            <div class="bg-[#020b14] p-2 rounded-2xl border border-nile-card text-center transition-all duration-300"
+                                id="card-tds">
+                                <p class="text-[9px] text-gray-400 uppercase font-bold mb-1">TDS</p>
+                                <div class="text-xl digital-font alert-green" id="val-tds">144</div>
+                                <p class="text-[7px] text-gray-500 mt-1">&lt;500 mg</p>
+                            </div>
+                            <div class="bg-[#020b14] p-2 rounded-2xl border border-nile-card text-center transition-all duration-300"
+                                id="card-hm">
+                                <p class="text-[9px] text-gray-400 uppercase font-bold mb-1">Metals</p>
+                                <div class="text-xl digital-font alert-green" id="val-hm">12</div>
+                                <p class="text-[7px] text-gray-500 mt-1">&lt;50 µg/L</p>
+                            </div>
+                            <div class="bg-[#020b14] p-2 rounded-2xl border border-nile-card text-center transition-all duration-300"
+                                id="card-ecoli">
+                                <p class="text-[9px] text-gray-400 uppercase font-bold mb-1">E.coli</p>
+                                <div class="text-xl digital-font alert-green" id="val-ecoli">80</div>
+                                <p class="text-[7px] text-gray-500 mt-1">&lt;200 CFU</p>
+                            </div>
+                            <div class="bg-[#020b14] p-2 rounded-2xl border border-nile-card text-center transition-all duration-300"
+                                id="card-mp">
+                                <p class="text-[9px] text-gray-400 uppercase font-bold mb-1">µPlastic</p>
+                                <div class="text-xl digital-font alert-green" id="val-mp">25</div>
+                                <p class="text-[7px] text-gray-500 mt-1">&lt;100 p/L</p>
+                            </div>
+                        </div>
+
+                        <!-- Sensor Health + TTI -->
+                        <div class="grid grid-cols-2 gap-3 flex-shrink-0">
+                            <div class="bg-[#020b14] p-3 rounded-xl border border-nile-card">
+                                <div class="flex justify-between items-center mb-1"><span
+                                        class="text-[10px] text-gray-400 font-bold">🔧 Sensor Health</span><span
+                                        class="text-[10px] font-bold text-nile-cyan" id="health-val">100%</span></div>
+                                <div class="health-bar-bg">
+                                    <div class="health-bar-fill bg-nile-cyan" id="health-bar" style="width:100%"></div>
+                                </div>
+                                <button onclick="deployDrone()"
+                                    class="mt-2 w-full text-[10px] py-1.5 rounded-lg bg-nile-cyan/10 border border-nile-cyan/30 text-nile-cyan hover:bg-nile-cyan/20 transition font-bold"><i
+                                        class="fa-solid fa-helicopter mr-1"></i>Deploy Drone</button>
+                            </div>
+                            <div class="bg-[#020b14] p-3 rounded-xl border border-nile-card" id="tti-container"
+                                style="display:none">
+                                <div class="tti-overlay text-center">
+                                    <p class="text-[10px] text-red-400 font-bold">⏱ Time To Impact</p>
+                                    <div class="text-lg font-black text-red-400" id="tti-val">--</div>
+                                    <p class="text-[9px] text-gray-400" id="tti-target"></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Chart -->
+                        <div class="glass-card p-4 flex-grow flex flex-col" style="min-height:160px">
+                            <div class="flex justify-between items-center mb-2">
+                                <h4 class="text-sm font-bold text-white uppercase tracking-wider"><i
+                                        class="fa-solid fa-chart-line text-nile-cyan mr-2"></i> الاتجاه اللحظي (pH — DO
+                                    — Turbidity)</h4>
+                                <span class="text-xs text-gray-500 font-mono" id="node-label-chart">Node 1 | شمال
+                                    دمياط</span>
+                            </div>
+                            <div class="relative flex-grow" style="min-height:140px">
+                                <canvas id="simComboChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Terminal + Controls -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 flex-shrink-0">
+                            <div class="terminal-log h-44 shadow-inner text-left" id="terminal-container" dir="ltr">
+                                <div class="text-[10px] text-nile-cyan font-mono mb-2"><i
+                                        class="fa-solid fa-terminal"></i> EWS TERMINAL — DECA v2.0</div>
+                                <div id="log-content" class="font-mono text-xs"></div>
+                            </div>
+                            <div class="glass-card p-3 flex flex-col justify-center gap-1.5">
+                                <h4 class="text-[10px] font-bold text-gray-400 uppercase text-center">محاكاة حوادث —
+                                    <span id="active-node-label" class="text-nile-cyan">Node 1</span>
+                                </h4>
+                                <button onclick="triggerScenario('normal')"
+                                    class="bg-nile-base hover:bg-nile-light text-white text-[10px] py-1.5 rounded-lg border border-gray-600 transition"><i
+                                        class="fa-solid fa-check-circle text-green-400 ml-1"></i> تدفق طبيعي</button>
+                                <button onclick="triggerScenario('industrial')"
+                                    class="bg-red-900/20 hover:bg-red-900/50 text-red-100 text-[10px] py-1.5 rounded-lg border border-red-700/50 transition"><i
+                                        class="fa-solid fa-skull-crossbones text-red-400 ml-1"></i> صناعي</button>
+                                <button onclick="triggerScenario('agricultural')"
+                                    class="bg-yellow-900/20 hover:bg-yellow-900/50 text-yellow-100 text-[10px] py-1.5 rounded-lg border border-yellow-700/50 transition"><i
+                                        class="fa-solid fa-seedling text-yellow-400 ml-1"></i> زراعي</button>
+                                <button onclick="triggerScenario('municipal')"
+                                    class="bg-green-900/20 hover:bg-green-900/50 text-green-100 text-[10px] py-1.5 rounded-lg border border-green-700/50 transition"><i
+                                        class="fa-solid fa-bacteria text-green-400 ml-1"></i> بلدي (E.coli)</button>
+                                <button onclick="triggerScenario('plastic')"
+                                    class="bg-purple-900/20 hover:bg-purple-900/50 text-purple-100 text-[10px] py-1.5 rounded-lg border border-purple-700/50 transition"><i
+                                        class="fa-solid fa-bottle-water text-purple-400 ml-1"></i> بلاستيك</button>
+                                <div class="flex gap-1 mt-1">
+                                    <button onclick="setSeason('winter')"
+                                        class="flex-1 text-[9px] py-1 rounded bg-blue-900/30 border border-blue-700/30 text-blue-300 hover:bg-blue-800/50 transition"
+                                        id="btn-winter">شتاء</button>
+                                    <button onclick="setSeason('spring')"
+                                        class="flex-1 text-[9px] py-1 rounded bg-green-900/30 border border-green-700/30 text-green-300 hover:bg-green-800/50 transition"
+                                        id="btn-spring">ربيع</button>
+                                    <button onclick="setSeason('summer')"
+                                        class="flex-1 text-[9px] py-1 rounded bg-orange-900/30 border border-orange-700/30 text-orange-300 hover:bg-orange-800/50 transition"
+                                        id="btn-summer">صيف</button>
+                                    <button onclick="setSeason('autumn')"
+                                        class="flex-1 text-[9px] py-1 rounded bg-yellow-900/30 border border-yellow-700/30 text-yellow-300 hover:bg-yellow-800/50 transition"
+                                        id="btn-autumn">خريف</button>
+                                </div>
+                                <div class="flex gap-1 mt-1">
+                                    <button onclick="toggleMute()"
+                                        class="flex-1 text-[10px] py-1.5 rounded-lg bg-nile-card border border-nile-cyan/20 text-gray-300 hover:text-white transition"
+                                        id="mute-btn"><i class="fa-solid fa-volume-high" id="mute-icon"></i>
+                                        صوت</button>
+                                    <button onclick="activateEmergency()"
+                                        class="flex-1 text-[10px] py-1.5 rounded-lg bg-red-900/30 border border-red-500/30 text-red-300 hover:bg-red-800/50 transition hidden"
+                                        id="emergency-btn"><i class="fa-solid fa-shield"></i> طوارئ 🔒</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 7. ROADMAP & REFERENCES                                       -->
+        <!-- ============================================================ -->
+        <section id="roadmap_refs" class="spa-section">
+            <div class="py-6">
+                <div class="text-center mb-10">
+                    <h2 class="text-4xl font-black text-white mb-3">خارطة الطريق و<span class="gradient-text">التوصيات
+                            الاستراتيجية</span></h2>
+                    <p class="text-gray-400">الرؤية العلمية والهندسية المستخلصة من الأبحاث لمرحلة 2026 وما بعدها.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 max-w-6xl mx-auto mb-12">
+                    <div
+                        class="bg-nile-dark p-6 rounded-2xl border border-nile-cyan/30 flex items-start gap-4 hover:border-nile-cyan transition hover:-translate-y-1">
+                        <div
+                            class="w-14 h-14 shrink-0 rounded-full bg-nile-cyan/10 text-nile-cyan flex items-center justify-center text-2xl">
+                            <i class="fa-solid fa-network-wired"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-base font-bold text-white mb-2">1. تعميم الرصد الذكي</h4>
+                            <p class="text-sm text-gray-400 leading-relaxed">تأسيس شبكة موحدة بنشر أكثر من <strong
+                                    class="text-nile-cyan">500 عقدة IoT</strong> على طول المجرى وفروعه، مرتبطة بمركز
+                                قومي للإنذار المبكر يدعم اتخاذ القرار لحظياً.</p>
+                        </div>
+                    </div>
+
+                    <div
+                        class="bg-nile-dark p-6 rounded-2xl border border-nile-accent/30 flex items-start gap-4 hover:border-nile-accent transition hover:-translate-y-1">
+                        <div
+                            class="w-14 h-14 shrink-0 rounded-full bg-nile-accent/10 text-nile-accent flex items-center justify-center text-2xl">
+                            <i class="fa-solid fa-gavel"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-base font-bold text-white mb-2">2. حوكمة الصرف الصناعي (م. 85)</h4>
+                            <p class="text-sm text-gray-400 leading-relaxed">التطبيق الفعلي للمادة 85 من قانون 147/2021
+                                باشتراط تراخيص المصانع بوجود محطات معالجة داخلية موصولة بوزارة الري.</p>
+                        </div>
+                    </div>
+
+                    <div
+                        class="bg-nile-dark p-6 rounded-2xl border border-nile-emerald/30 flex items-start gap-4 hover:border-nile-emerald transition hover:-translate-y-1">
+                        <div
+                            class="w-14 h-14 shrink-0 rounded-full bg-nile-emerald/10 text-nile-emerald flex items-center justify-center text-2xl">
+                            <i class="fa-solid fa-microscope"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-base font-bold text-white mb-2">3. توطين الحساسات الحيوية</h4>
+                            <p class="text-sm text-gray-400 leading-relaxed">تشجيع الأبحاث الوطنية لإنتاج biosensors
+                                محلياً بتكلفة منخفضة للكشف عن المعادن الثقيلة والمبيدات، لتقليل الاعتماد على الاستيراد.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div
+                        class="bg-nile-dark p-6 rounded-2xl border border-nile-plastic/30 flex items-start gap-4 hover:border-nile-plastic transition hover:-translate-y-1">
+                        <div
+                            class="w-14 h-14 shrink-0 rounded-full bg-nile-plastic/10 text-nile-plastic flex items-center justify-center text-2xl">
+                            <i class="fa-solid fa-recycle"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-base font-bold text-white mb-2">4. الاقتصاد الدائري والبلاستيك</h4>
+                            <p class="text-sm text-gray-400 leading-relaxed">إطلاق مبادرات مثل (Very Nile) لإعادة تدوير
+                                البلاستيك المستخرج من النيل، ودمج تقنيات الرؤية الحاسوبية لرصد النفايات العائمة.</p>
+                        </div>
+                    </div>
+
+                    <div
+                        class="bg-nile-dark p-6 rounded-2xl border border-blue-400/30 flex items-start gap-4 hover:border-blue-400 transition hover:-translate-y-1">
+                        <div
+                            class="w-14 h-14 shrink-0 rounded-full bg-blue-400/10 text-blue-400 flex items-center justify-center text-2xl">
+                            <i class="fa-solid fa-seedling"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-base font-bold text-white mb-2">5. تسريع تبطين الترع وري ذكي</h4>
+                            <p class="text-sm text-gray-400 leading-relaxed">استكمال الـ 20,000 كم خلال 5 سنوات مع توفير
+                                آليات تمويل ميسرة لتحويل صغار المزارعين للري بالتنقيط ودمج IoT لجدولة الري.</p>
+                        </div>
+                    </div>
+
+                    <div
+                        class="bg-nile-dark p-6 rounded-2xl border border-red-400/30 flex items-start gap-4 hover:border-red-400 transition hover:-translate-y-1">
+                        <div
+                            class="w-14 h-14 shrink-0 rounded-full bg-red-400/10 text-red-400 flex items-center justify-center text-2xl">
+                            <i class="fa-solid fa-satellite"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-base font-bold text-white mb-2">6. مراجعة دورية للتشريعات</h4>
+                            <p class="text-sm text-gray-400 leading-relaxed">مراجعة قانون 48/1982 كل 5 سنوات لاستيعاب
+                                الملوثات الناشئة (المركبات الصيدلانية، الميكروبلاستيك) واشتراط المراقبة الفضائية.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-divider"><span
+                        class="bg-nile-base px-4 text-gray-400 text-sm font-bold tracking-widest uppercase"><i
+                            class="fa-solid fa-book mr-2"></i> المصادر الأكاديمية (APA 7th) <i
+                            class="fa-solid fa-book ml-2"></i></span></div>
+
+                <!-- Google Drive Section -->
+                <div
+                    class="mb-8 text-center bg-nile-dark/40 p-6 rounded-2xl border border-nile-cyan/20 max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 group hover:border-nile-cyan/50 transition">
+                    <div class="text-right">
+                        <h3 class="text-lg font-bold text-white mb-1"><i
+                                class="fa-solid fa-folder-open text-nile-cyan ml-2"></i> المشروع والملفات الكاملة</h3>
+                        <p class="text-xs text-gray-400">جميع الأكواد البرمجية، والمراجع، والموارد الإضافية متاحة عبر
+                            مجلد جوجل درايف.</p>
+                    </div>
+                    <a href="https://drive.google.com/drive/folders/1o3Qev4eDi9YMikqSVWe3crTCCslf8Dlo?usp=drive_link"
+                        target="_blank"
+                        class="shrink-0 flex items-center gap-2 bg-nile-cyan/10 border border-nile-cyan/40 text-nile-cyan px-6 py-3 rounded-xl hover:bg-nile-cyan hover:text-nile-dark transition font-bold shadow-[0_0_15px_rgba(100,255,218,0.1)] hover:shadow-[0_0_25px_rgba(100,255,218,0.5)]">
+                        <i class="fa-brands fa-google-drive text-xl"></i>
+                        فتح المجلد (Google Drive)
+                    </a>
+                </div>
+
+                <div class="glass-card p-8 max-w-5xl mx-auto">
+                    <h3 class="text-xl font-bold text-white border-b border-nile-card pb-3 mb-5 text-right"><i
+                            class="fa-solid fa-book-open text-nile-cyan mr-2 ml-2"></i> المراجع العربية والقوانين</h3>
+                    <ul class="list-disc list-inside space-y-4 text-sm text-gray-300 leading-relaxed text-right mb-10">
+                        <li>الجهاز المركزي للتعبئة العامة والإحصاء. (2024). <em>نشرة الموارد المائية والري في مصر:
+                                المؤشرات والآفاق</em>. القاهرة، مصر.</li>
+                        <li>جمهورية مصر العربية. (1982). <em>القانون رقم 48 لسنة 1982 بشأن حماية نهر النيل والمجاري
+                                المائية من التلوث ولائحته التنفيذية وتعديلاته</em>. الجريدة الرسمية.</li>
+                        <li>جمهورية مصر العربية. (2021). <em>القانون رقم 147 لسنة 2021 بإصدار قانون الموارد المائية
+                                والري</em>. الجريدة الرسمية.</li>
+                        <li>جمهورية مصر العربية. (2020). <em>القانون رقم 202 لسنة 2020 بشأن تنظيم إدارة المخلفات</em>.
+                            الجريدة الرسمية.</li>
+                        <li>وزارة الموارد المائية والري. (2024). <em>التقرير السنوي حول تقدم مشروعات تبطين الترع والتحول
+                                للري الحديث</em>. القاهرة، مصر.</li>
+                        <li>رئاسة الجمهورية المصرية. (2024). <em>محطة معالجة مياه مصرف بحر البقر: البيانات التقنية
+                                والإنجازات</em>. القاهرة.</li>
+                    </ul>
+
+                    <h3 class="text-xl font-bold text-white border-b border-nile-card pb-3 mb-5 text-left" dir="ltr"><i
+                            class="fa-solid fa-globe text-nile-cyan mr-2"></i> English &amp; Academic Sources</h3>
+                    <ul class="list-disc list-inside space-y-4 text-sm text-gray-300 leading-relaxed text-left font-sans"
+                        dir="ltr">
+                        <li>Chowdury, M. S. U., Emran, T. B., Ghosh, S., et al. (2019). IoT based real-time river water
+                            quality monitoring system. <em>Procedia Computer Science</em>, 155, 161–168.</li>
+                        <li>Essamlali, I., Nhaila, H., &amp; El Khaili, M. (2024). Advances in machine learning and IoT
+                            for water quality monitoring: A comprehensive review. <em>Heliyon</em>, 10(6), e27920.</li>
+                        <li>Hassan, M., et al. (2025). IoT-Based Water Quality Monitoring Systems for the Nile River.
+                            <em>Journal of Environmental Engineering &amp; Technology</em>.
+                        </li>
+                        <li>Heggy, E., Sharkawy, Z., &amp; Abotalib, A. Z. (2021). Egypt's water budget deficit and
+                            suggested mitigation policies for the GERD filling scenarios. <em>Environmental Research
+                                Letters</em>, 16(7), 074022.</li>
+                        <li>Mourad, K. A., et al. (2025). Economic viability of irrigation canal lining in Upper Egypt:
+                            A benefit-cost analysis. <em>AQUA—Water Infrastructure, Ecosystems and Society</em>.</li>
+                        <li>Okafor, G., et al. (2025). Assessment of industrial pollution and water quality in the Nile
+                            River using GIS-based indices at Aswan, Egypt. <em>Scientific Reports</em>, 15.</li>
+                        <li>Lekmine, G., et al. (2024). Smart water quality monitoring with IoT wireless sensor
+                            networks. <em>Sensors</em>, 24(9), 2871.</li>
+                        <li>Soliman, M. F., &amp; Esmail, M. (2021). Past and future trends of Egypt's water consumption
+                            and its sources. <em>Nature Communications</em>, 12, 4508.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 8. TEAM                                                       -->
+        <!-- ============================================================ -->
+        <section id="team" class="spa-section">
+            <div class="py-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-black text-white mb-3">فريق <span class="text-purple-400">البحث</span></h2>
+                    <p class="text-gray-400">نخبة من الباحثين بكلية الهندسة - جامعة دمنهور القائمين على إعداد المشروع.
+                    </p>
+                </div>
+
+                <div class="max-w-7xl mx-auto">
+                    <!-- Developers -->
+                    <div class="mb-16">
+                        <div class="text-center mb-8">
+                            <h3
+                                class="text-2xl font-bold text-nile-cyan border-b border-nile-cyan/20 pb-3 inline-block px-8">
+                                <i class="fa-solid fa-code mr-2"></i> Developers
+                            </h3>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <a href="https://www.linkedin.com/in/moamen-sakr-21b13125b/" target="_blank"
+                                class="block bg-nile-dark/80 p-6 rounded-2xl border border-nile-cyan/20 hover:border-nile-cyan hover:-translate-y-2 transition duration-300 text-center shadow-lg group relative overflow-hidden">
+                                <div
+                                    class="absolute top-3 left-4 text-nile-cyan opacity-40 group-hover:opacity-100 transition">
+                                    <i class="fa-brands fa-linkedin text-xl"></i>
+                                </div>
+                                <div class="team-img-wrapper dev group-hover:scale-105 transition"><img
+                                        src="./moamen.jpg" alt="مؤمن" class="team-img"
+                                        onerror="this.src='https://via.placeholder.com/150/020b14/64ffda?text=M'"></div>
+                                <h4 class="text-white font-bold text-sm mb-3 h-10 flex items-center justify-center">مؤمن
+                                    محمد فوزي أحمد صقر</h4>
+                                <div
+                                    class="flex flex-col gap-2 text-xs text-gray-400 border-t border-nile-cyan/10 pt-3">
+                                    <span class="font-mono bg-nile-base py-1 rounded">24170124</span><span
+                                        class="text-nile-cyan font-bold"><i
+                                            class="fa-solid fa-satellite-dish ml-1"></i>كهرباء اتصالات</span>
+                                </div>
+                            </a>
+                            <a href="https://www.linkedin.com/in/mohamed-samir-220620359/" target="_blank"
+                                class="block bg-nile-dark/80 p-6 rounded-2xl border border-nile-cyan/20 hover:border-nile-cyan hover:-translate-y-2 transition duration-300 text-center shadow-lg group relative overflow-hidden">
+                                <div
+                                    class="absolute top-3 left-4 text-nile-cyan opacity-40 group-hover:opacity-100 transition">
+                                    <i class="fa-brands fa-linkedin text-xl"></i>
+                                </div>
+                                <div class="team-img-wrapper dev group-hover:scale-105 transition"><img
+                                        src="./mohamed.jpg" alt="محمد" class="team-img"
+                                        onerror="this.src='https://via.placeholder.com/150/020b14/64ffda?text=M'"></div>
+                                <h4 class="text-white font-bold text-sm mb-3 h-10 flex items-center justify-center">محمد
+                                    سمير خميس مصطفى</h4>
+                                <div
+                                    class="flex flex-col gap-2 text-xs text-gray-400 border-t border-nile-cyan/10 pt-3">
+                                    <span class="font-mono bg-nile-base py-1 rounded">24170141</span><span
+                                        class="text-nile-cyan font-bold"><i
+                                            class="fa-solid fa-satellite-dish ml-1"></i>كهرباء اتصالات</span>
+                                </div>
+                            </a>
+                            <a href="https://www.linkedin.com/in/ibrahim-elsanhoury-80735326b/" target="_blank"
+                                class="block bg-nile-dark/80 p-6 rounded-2xl border border-nile-cyan/20 hover:border-nile-cyan hover:-translate-y-2 transition duration-300 text-center shadow-lg group relative overflow-hidden">
+                                <div
+                                    class="absolute top-3 left-4 text-nile-cyan opacity-40 group-hover:opacity-100 transition">
+                                    <i class="fa-brands fa-linkedin text-xl"></i>
+                                </div>
+                                <div class="team-img-wrapper dev group-hover:scale-105 transition"><img
+                                        src="./ibrahim.jpg" alt="إبراهيم" class="team-img"
+                                        onerror="this.src='https://via.placeholder.com/150/020b14/64ffda?text=I'"></div>
+                                <h4 class="text-white font-bold text-sm mb-3 h-10 flex items-center justify-center">
+                                    إبراهيم محمد إبراهيم السنهوري</h4>
+                                <div
+                                    class="flex flex-col gap-2 text-xs text-gray-400 border-t border-nile-cyan/10 pt-3">
+                                    <span class="font-mono bg-nile-base py-1 rounded">24170009</span><span
+                                        class="text-nile-cyan font-bold"><i class="fa-solid fa-bolt ml-1"></i>كهرباء
+                                        باور</span>
+                                </div>
+                            </a>
+                            <a href="https://www.linkedin.com/in/nada120/" target="_blank"
+                                class="block bg-nile-dark/80 p-6 rounded-2xl border border-nile-cyan/20 hover:border-nile-cyan hover:-translate-y-2 transition duration-300 text-center shadow-lg group relative overflow-hidden">
+                                <div
+                                    class="absolute top-3 left-4 text-nile-cyan opacity-40 group-hover:opacity-100 transition">
+                                    <i class="fa-brands fa-linkedin text-xl"></i>
+                                </div>
+                                <div class="team-img-wrapper dev group-hover:scale-105 transition"><img src="./nada.jpg"
+                                        alt="ندى" class="team-img"
+                                        onerror="this.src='https://via.placeholder.com/150/020b14/64ffda?text=N'"></div>
+                                <h4 class="text-white font-bold text-sm mb-3 h-10 flex items-center justify-center">ندى
+                                    عبد الحميد رجب عبد الحميد</h4>
+                                <div
+                                    class="flex flex-col gap-2 text-xs text-gray-400 border-t border-nile-cyan/10 pt-3">
+                                    <span class="font-mono bg-nile-base py-1 rounded">24170185</span><span
+                                        class="text-nile-cyan font-bold"><i
+                                            class="fa-solid fa-satellite-dish ml-1"></i>كهرباء اتصالات</span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Data Handling -->
+                    <div class="mb-16">
+                        <div class="text-center mb-8">
+                            <h3
+                                class="text-2xl font-bold text-purple-400 border-b border-purple-400/20 pb-3 inline-block px-8">
+                                <i class="fa-solid fa-database mr-2"></i> Data Handling
+                            </h3>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <a href="https://www.linkedin.com/in/ashrakt-eldefrawy-8a18a3332/" target="_blank"
+                                class="block bg-nile-dark/80 p-6 rounded-2xl border border-purple-500/20 hover:border-purple-400 hover:-translate-y-2 transition duration-300 text-center shadow-lg group relative overflow-hidden">
+                                <div
+                                    class="absolute top-3 left-4 text-purple-400 opacity-40 group-hover:opacity-100 transition">
+                                    <i class="fa-brands fa-linkedin text-xl"></i>
+                                </div>
+                                <div class="team-img-wrapper data group-hover:scale-105 transition"><img
+                                        src="./ashraqat.jpg" alt="أشرقت" class="team-img"
+                                        onerror="this.src='https://via.placeholder.com/150/020b14/c084fc?text=A'"></div>
+                                <h4 class="text-white font-bold text-sm mb-3 h-10 flex items-center justify-center">
+                                    اشرقت عبد الهادي ابو عجيلة الدفراوي</h4>
+                                <div
+                                    class="flex flex-col gap-2 text-xs text-gray-400 border-t border-purple-500/10 pt-3">
+                                    <span class="font-mono bg-nile-base py-1 rounded">24170035</span><span
+                                        class="text-purple-400 font-bold"><i
+                                            class="fa-solid fa-gear ml-1"></i>ميكانيكا</span>
+                                </div>
+                            </a>
+                            <a href="#"
+                                class="block bg-nile-dark/80 p-6 rounded-2xl border border-purple-500/20 hover:border-purple-400 hover:-translate-y-2 transition duration-300 text-center shadow-lg group relative overflow-hidden">
+                                <div
+                                    class="absolute top-3 left-4 text-purple-400 opacity-40 group-hover:opacity-100 transition">
+                                    <i class="fa-brands fa-linkedin text-xl"></i>
+                                </div>
+                                <div class="team-img-wrapper data group-hover:scale-105 transition"><img
+                                        src="./menna.jpg" alt="منة الله" class="team-img"
+                                        onerror="this.src='https://via.placeholder.com/150/020b14/c084fc?text=M'"></div>
+                                <h4 class="text-white font-bold text-sm mb-3 h-10 flex items-center justify-center">منة
+                                    الله حسن أحمد محمد بدر الدين</h4>
+                                <div
+                                    class="flex flex-col gap-2 text-xs text-gray-400 border-t border-purple-500/10 pt-3">
+                                    <span class="font-mono bg-nile-base py-1 rounded">24170182</span><span
+                                        class="text-purple-400 font-bold"><i
+                                            class="fa-solid fa-satellite-dish ml-1"></i>كهرباء اتصالات</span>
+                                </div>
+                            </a>
+                            <a href="https://www.linkedin.com/in/aya-safwat-7a941a379/" target="_blank"
+                                class="block bg-nile-dark/80 p-6 rounded-2xl border border-purple-500/20 hover:border-purple-400 hover:-translate-y-2 transition duration-300 text-center shadow-lg group relative overflow-hidden">
+                                <div
+                                    class="absolute top-3 left-4 text-purple-400 opacity-40 group-hover:opacity-100 transition">
+                                    <i class="fa-brands fa-linkedin text-xl"></i>
+                                </div>
+                                <div class="team-img-wrapper data group-hover:scale-105 transition"><img
+                                        src="./aya_safwat.jpg" alt="آية" class="team-img"
+                                        onerror="this.src='https://via.placeholder.com/150/020b14/c084fc?text=A'"></div>
+                                <h4 class="text-white font-bold text-sm mb-3 h-10 flex items-center justify-center">آية
+                                    صفوت محمد مشالي</h4>
+                                <div
+                                    class="flex flex-col gap-2 text-xs text-gray-400 border-t border-purple-500/10 pt-3">
+                                    <span class="font-mono bg-nile-base py-1 rounded">24170003</span><span
+                                        class="text-purple-400 font-bold"><i
+                                            class="fa-solid fa-satellite-dish ml-1"></i>كهرباء اتصالات</span>
+                                </div>
+                            </a>
+                            <a href="https://www.linkedin.com/in/amal-abdo-6a746a36a/" target="_blank"
+                                class="block bg-nile-dark/80 p-6 rounded-2xl border border-purple-500/20 hover:border-purple-400 hover:-translate-y-2 transition duration-300 text-center shadow-lg group relative overflow-hidden">
+                                <div
+                                    class="absolute top-3 left-4 text-purple-400 opacity-40 group-hover:opacity-100 transition">
+                                    <i class="fa-brands fa-linkedin text-xl"></i>
+                                </div>
+                                <div class="team-img-wrapper data group-hover:scale-105 transition"><img
+                                        src="./amal.jpg" alt="آمال" class="team-img"
+                                        onerror="this.src='https://via.placeholder.com/150/020b14/c084fc?text=A'"></div>
+                                <h4 class="text-white font-bold text-sm mb-3 h-10 flex items-center justify-center">آمال
+                                    مصطفى جمعه عبده</h4>
+                                <div
+                                    class="flex flex-col gap-2 text-xs text-gray-400 border-t border-purple-500/10 pt-3">
+                                    <span class="font-mono bg-nile-base py-1 rounded">24170005</span><span
+                                        class="text-purple-400 font-bold"><i
+                                            class="fa-solid fa-satellite-dish ml-1"></i>كهرباء اتصالات</span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Search -->
+                    <div class="mb-10">
+                        <div class="text-center mb-8">
+                            <h3
+                                class="text-2xl font-bold text-nile-accent border-b border-nile-accent/20 pb-3 inline-block px-8">
+                                <i class="fa-solid fa-magnifying-glass mr-2"></i> Search
+                            </h3>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <a href="https://www.linkedin.com/in/ahmed-ghaly-93a745383/" target="_blank"
+                                class="block bg-nile-dark/80 p-6 rounded-2xl border border-nile-accent/20 hover:border-nile-accent hover:-translate-y-2 transition duration-300 text-center shadow-lg group relative overflow-hidden">
+                                <div
+                                    class="absolute top-3 left-4 text-nile-accent opacity-40 group-hover:opacity-100 transition">
+                                    <i class="fa-brands fa-linkedin text-xl"></i>
+                                </div>
+                                <div class="team-img-wrapper search group-hover:scale-105 transition"><img
+                                        src="./ahmed.jpg" alt="أحمد" class="team-img"
+                                        onerror="this.src='https://via.placeholder.com/150/020b14/f39c12?text=A'"></div>
+                                <h4 class="text-white font-bold text-sm mb-3 h-10 flex items-center justify-center">أحمد
+                                    محمد إبراهيم غالي</h4>
+                                <div
+                                    class="flex flex-col gap-2 text-xs text-gray-400 border-t border-nile-accent/10 pt-3">
+                                    <span class="font-mono bg-nile-base py-1 rounded">24170220</span><span
+                                        class="text-nile-accent font-bold"><i class="fa-solid fa-bolt ml-1"></i>كهرباء
+                                        باور</span>
+                                </div>
+                            </a>
+                            <a href="https://www.linkedin.com/in/aya-elaw-992ab23b0/?utm_source=share_via&utm_content=profile&utm_medium=member_ios"
+                                class="block bg-nile-dark/80 p-6 rounded-2xl border border-nile-accent/20 hover:border-nile-accent hover:-translate-y-2 transition duration-300 text-center shadow-lg group relative overflow-hidden">
+                                <div
+                                    class="absolute top-3 left-4 text-nile-accent opacity-40 group-hover:opacity-100 transition">
+                                    <i class="fa-brands fa-linkedin text-xl"></i>
+                                </div>
+                                <div class="team-img-wrapper search group-hover:scale-105 transition"><img
+                                        src="./aya_elaw.jpg" alt="ايه" class="team-img"
+                                        onerror="this.src='https://via.placeholder.com/150/020b14/f39c12?text=A'"></div>
+                                <h4 class="text-white font-bold text-sm mb-3 h-10 flex items-center justify-center">ايه
+                                    محمد مهدي العو</h4>
+                                <div
+                                    class="flex flex-col gap-2 text-xs text-gray-400 border-t border-nile-accent/10 pt-3">
+                                    <span class="font-mono bg-nile-base py-1 rounded">24170232</span><span
+                                        class="text-nile-accent font-bold"><i
+                                            class="fa-solid fa-gear ml-1"></i>ميكانيكا</span>
+                                </div>
+                            </a>
+                            <a href="https://www.linkedin.com/in/rasha-elsherbeny-68666a405/?skipRedirect=true"
+                                class="block bg-nile-dark/80 p-6 rounded-2xl border border-nile-accent/20 hover:border-nile-accent hover:-translate-y-2 transition duration-300 text-center shadow-lg group relative overflow-hidden">
+                                <div
+                                    class="absolute top-3 left-4 text-nile-accent opacity-40 group-hover:opacity-100 transition">
+                                    <i class="fa-brands fa-linkedin text-xl"></i>
+                                </div>
+                                <div class="team-img-wrapper search group-hover:scale-105 transition"><img
+                                        src="./rasha.jpg" alt="رشا" class="team-img"
+                                        onerror="this.src='https://via.placeholder.com/150/020b14/f39c12?text=R'"></div>
+                                <h4 class="text-white font-bold text-sm mb-3 h-10 flex items-center justify-center">رشا
+                                    نجاح بسيوني الشربيني</h4>
+                                <div
+                                    class="flex flex-col gap-2 text-xs text-gray-400 border-t border-nile-accent/10 pt-3">
+                                    <span class="font-mono bg-nile-base py-1 rounded">23170004</span><span
+                                        class="text-nile-accent font-bold"><i
+                                            class="fa-solid fa-gear ml-1"></i>ميكانيكا</span>
+                                </div>
+                            </a>
+                            <a href="https://www.linkedin.com/in/alaa-khalifa-318b19398/?utm_source=share_via&utm_content=profile&utm_medium=member_ios"
+                                class="block bg-nile-dark/80 p-6 rounded-2xl border border-nile-accent/20 hover:border-nile-accent hover:-translate-y-2 transition duration-300 text-center shadow-lg group relative overflow-hidden">
+                                <div
+                                    class="absolute top-3 left-4 text-nile-accent opacity-40 group-hover:opacity-100 transition">
+                                    <i class="fa-brands fa-linkedin text-xl"></i>
+                                </div>
+                                <div class="team-img-wrapper search group-hover:scale-105 transition"><img
+                                        src="./alaa.jpg" alt="آلاء" class="team-img"
+                                        onerror="this.src='https://via.placeholder.com/150/020b14/f39c12?text=A'"></div>
+                                <h4 class="text-white font-bold text-sm mb-3 h-10 flex items-center justify-center">آلاء
+                                    محمد خليفة</h4>
+                                <div
+                                    class="flex flex-col gap-2 text-xs text-gray-400 border-t border-nile-accent/10 pt-3">
+                                    <span class="font-mono bg-nile-base py-1 rounded">24170001</span><span
+                                        class="text-nile-accent font-bold"><i
+                                            class="fa-solid fa-helmet-safety ml-1"></i>مدني</span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 9. INTERACTIVE TOOLS                                          -->
+        <!-- ============================================================ -->
+        <section id="tools" class="spa-section">
+            <div class="py-6">
+                <div class="text-center mb-10">
+                    <h2 class="text-4xl font-black text-white mb-3"><span class="gradient-text">الأدوات التفاعلية</span>
+                    </h2>
+                    <p class="text-gray-400">أدوات محاكاة وتحليل تفاعلية لاستكشاف سيناريوهات الأمن المائي المصري.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-7xl mx-auto">
+
+
+                    <!-- Tool B: Smart Farm Optimizer -->
+                    <div class="tool-card border-t-4 border-t-nile-emerald">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div
+                                class="w-12 h-12 bg-nile-emerald/10 rounded-xl flex items-center justify-center text-nile-emerald text-2xl border border-nile-emerald/20">
+                                <i class="fa-solid fa-tractor"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-white">محسّن المزرعة الذكية</h3>
+                                <p class="text-xs text-gray-400">اختر المحصول ونظام الري</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 mb-4">
+                            <div><label class="text-xs text-gray-400 block mb-1">المحصول</label><select id="farm-crop"
+                                    class="w-full bg-nile-dark border border-nile-card text-white rounded-lg p-2 text-sm"
+                                    onchange="updateFarm()">
+                                    <option value="sugarcane">قصب السكر</option>
+                                    <option value="wheat">القمح</option>
+                                    <option value="beet">بنجر السكر</option>
+                                </select></div>
+                            <div><label class="text-xs text-gray-400 block mb-1">نظام الري</label><select id="farm-irr"
+                                    class="w-full bg-nile-dark border border-nile-card text-white rounded-lg p-2 text-sm"
+                                    onchange="updateFarm()">
+                                    <option value="flood">غمر</option>
+                                    <option value="sprinkler">رش</option>
+                                    <option value="drip">تنقيط</option>
+                                </select></div>
+                        </div>
+                        <div style="height:180px"><canvas id="farmChart"></canvas></div>
+                    </div>
+
+                    <!-- Tool C: Personal Water Calculator -->
+                    <div class="tool-card border-t-4 border-t-nile-blue">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div
+                                class="w-12 h-12 bg-nile-blue/10 rounded-xl flex items-center justify-center text-nile-blue text-2xl border border-nile-blue/20">
+                                <i class="fa-solid fa-shower"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-white">حاسبة استهلاكك المائي</h3>
+                                <p class="text-xs text-gray-400">اكتشف استهلاكك اليومي مقارنة بالمعدل الوطني</p>
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <div><label class="text-sm text-gray-300 flex justify-between"><span>عدد أفراد
+                                        الأسرة</span><span id="calc-fam-val"
+                                        class="text-nile-blue font-bold">4</span></label><input type="range"
+                                    id="calc-fam" min="1" max="10" value="4" class="w-full accent-[#00d2ff]"
+                                    oninput="updateCalc()"></div>
+                            <div><label class="text-sm text-gray-300 flex justify-between"><span>مدة الاستحمام
+                                        (دقائق)</span><span id="calc-sh-val"
+                                        class="text-nile-blue font-bold">8</span></label><input type="range"
+                                    id="calc-sh" min="1" max="30" value="8" class="w-full accent-[#00d2ff]"
+                                    oninput="updateCalc()"></div>
+                            <div><label class="text-sm text-gray-300 flex justify-between"><span>غسلات
+                                        أسبوعياً</span><span id="calc-lau-val"
+                                        class="text-nile-blue font-bold">4</span></label><input type="range"
+                                    id="calc-lau" min="1" max="14" value="4" class="w-full accent-[#00d2ff]"
+                                    oninput="updateCalc()"></div>
+                            <div><label class="text-sm text-gray-300 flex justify-between"><span>ري الحديقة
+                                        (دقائق/يوم)</span><span id="calc-gar-val"
+                                        class="text-nile-blue font-bold">10</span></label><input type="range"
+                                    id="calc-gar" min="0" max="60" value="10" class="w-full accent-[#00d2ff]"
+                                    oninput="updateCalc()"></div>
+                        </div>
+                        <div class="mt-4 grid grid-cols-2 gap-3">
+                            <div class="bg-nile-dark p-3 rounded-xl border border-nile-card text-center">
+                                <p class="text-xs text-gray-400">استهلاكك اليومي</p>
+                                <div class="text-2xl font-black text-nile-blue" id="calc-daily">584</div>
+                                <p class="text-[10px] text-gray-500">لتر/يوم</p>
+                            </div>
+                            <div class="bg-nile-dark p-3 rounded-xl border border-nile-card text-center">
+                                <p class="text-xs text-gray-400">المعدل الوطني</p>
+                                <div class="text-2xl font-black text-nile-accent">350</div>
+                                <p class="text-[10px] text-gray-500">لتر/يوم</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tool D: Scarcity Projector -->
+                    <div class="tool-card border-t-4 border-t-nile-accent">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div
+                                class="w-12 h-12 bg-nile-accent/10 rounded-xl flex items-center justify-center text-nile-accent text-2xl border border-nile-accent/20">
+                                <i class="fa-solid fa-chart-line"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-white">إسقاط الندرة المائية</h3>
+                                <p class="text-xs text-gray-400">سيناريوهات السكان مقابل حصة النيل</p>
+                            </div>
+                        </div>
+                        <div class="space-y-4">
+                            <div><label class="text-sm text-gray-300 flex justify-between"><span>السكان
+                                        (مليون)</span><span id="scar-pop-val"
+                                        class="text-nile-accent font-bold">110</span></label><input type="range"
+                                    id="scar-pop" min="107" max="150" value="110" class="w-full accent-[#f39c12]"
+                                    oninput="updateScarcity()"></div>
+                            <div><label class="text-sm text-gray-300 flex justify-between"><span>حصة النيل (مليار
+                                        م³)</span><span id="scar-share-val"
+                                        class="text-nile-accent font-bold">55.5</span></label><input type="range"
+                                    id="scar-share" min="40" max="60" value="55.5" step="0.5"
+                                    class="w-full accent-[#f39c12]" oninput="updateScarcity()"></div>
+                        </div>
+                        <div class="mt-4 p-4 bg-nile-dark rounded-xl border border-nile-card text-center">
+                            <p class="text-sm text-gray-400 mb-2">نصيب الفرد السنوي</p>
+                            <div class="text-5xl font-black" id="scar-result" style="color:#f39c12">504</div>
+                            <p class="text-xs mt-1" id="scar-status" style="color:#ef4444">⚠ تحت خط الشح المائي المطلق
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tool E: Country Comparison (full width) -->
+                <div class="tool-card border-t-4 border-t-nile-plastic max-w-7xl mx-auto mt-6">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div
+                            class="w-12 h-12 bg-nile-plastic/10 rounded-xl flex items-center justify-center text-nile-plastic text-2xl border border-nile-plastic/20">
+                            <i class="fa-solid fa-globe"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-white">مقارنة دولية: نصيب الفرد من المياه</h3>
+                            <p class="text-xs text-gray-400">م³ / فرد / سنة — مصر مقارنةً بالعالم</p>
+                        </div>
+                    </div>
+                    <div style="height:280px"><canvas id="comparisonChart"></canvas></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 10. ADVANCED STATISTICS                                       -->
+        <!-- ============================================================ -->
+        <section id="adv_stats" class="spa-section">
+            <div class="py-6">
+                <div class="text-center mb-10">
+                    <h2 class="text-4xl font-black text-white mb-3"><span class="gradient-text">الإحصائيات
+                            المتقدمة</span></h2>
+                    <p class="text-gray-400">رؤية بيانية شاملة للوضع المائي المصري بالأرقام والرسوم البيانية.</p>
+                </div>
+
+                <!-- 4 Stat Cards -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 max-w-6xl mx-auto">
+                    <div class="glass-card stat-card-glow p-5 text-center border-t-4 border-t-nile-cyan">
+                        <i class="fa-solid fa-water text-nile-cyan text-2xl mb-2"></i>
+                        <div class="text-3xl font-black text-white countup" data-target="55.5" data-suffix="B">0</div>
+                        <p class="text-xs text-gray-400 mt-1">حصة مصر من النيل (مليار م³)</p>
+                    </div>
+                    <div class="glass-card stat-card-glow p-5 text-center border-t-4 border-t-red-500">
+                        <i class="fa-solid fa-person-drowning text-red-400 text-2xl mb-2"></i>
+                        <div class="text-3xl font-black text-white countup" data-target="490" data-suffix="">0</div>
+                        <p class="text-xs text-gray-400 mt-1">نصيب الفرد م³/سنة</p>
+                    </div>
+                    <div class="glass-card stat-card-glow p-5 text-center border-t-4 border-t-nile-accent">
+                        <i class="fa-solid fa-industry text-nile-accent text-2xl mb-2"></i>
+                        <div class="text-3xl font-black text-white countup" data-target="270" data-suffix="">0</div>
+                        <p class="text-xs text-gray-400 mt-1">طن ملوثات صناعية/يوم</p>
+                    </div>
+                    <div class="glass-card stat-card-glow p-5 text-center border-t-4 border-t-nile-emerald">
+                        <i class="fa-solid fa-recycle text-nile-emerald text-2xl mb-2"></i>
+                        <div class="text-3xl font-black text-white countup" data-target="7500" data-suffix=" km">0</div>
+                        <p class="text-xs text-gray-400 mt-1">ترع مبطنة حتى 2024</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-6xl mx-auto mb-8">
+                    <!-- Chart 1: Per Capita Decline -->
+                    <div class="glass-card p-6">
+                        <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2"><i
+                                class="fa-solid fa-chart-line text-nile-cyan"></i> الانحدار التاريخي لنصيب الفرد</h3>
+                        <div style="height:260px"><canvas id="statPerCapita"></canvas></div>
+                    </div>
+
+                    <!-- Chart 2: Water Demand Donut -->
+                    <div class="glass-card p-6">
+                        <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2"><i
+                                class="fa-solid fa-chart-pie text-nile-emerald"></i> توزيع الطلب المائي</h3>
+                        <div style="height:260px"><canvas id="statDemand"></canvas></div>
+                    </div>
+
+                    <!-- Chart 3: Sources Donut -->
+                    <div class="glass-card p-6">
+                        <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2"><i
+                                class="fa-solid fa-faucet-drip text-nile-blue"></i> مصادر المياه في مصر</h3>
+                        <div style="height:260px"><canvas id="statSources"></canvas></div>
+                    </div>
+
+                    <!-- Chart 4: Canal Lining Progress -->
+                    <div class="glass-card p-6">
+                        <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2"><i
+                                class="fa-solid fa-road text-nile-accent"></i> تقدم مشروع تبطين الترع</h3>
+                        <div class="space-y-5 mt-6">
+                            <div>
+                                <div class="flex justify-between text-sm mb-2"><span class="text-gray-300">المنجز فعلياً
+                                        (7,500 كم)</span><span class="text-nile-cyan font-bold text-lg">37.5%</span>
+                                </div>
+                                <div class="progress-bar-container" style="height:14px">
+                                    <div class="progress-bar bg-nile-cyan" style="width:0%" id="prog-done"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-2"><span class="text-gray-300">قيد التنفيذ
+                                        (6,194 كم)</span><span class="text-purple-400 font-bold text-lg">31%</span>
+                                </div>
+                                <div class="progress-bar-container" style="height:14px">
+                                    <div class="progress-bar bg-purple-400" style="width:0%" id="prog-wip"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-2"><span class="text-gray-300">المتبقي
+                                        (6,306 كم)</span><span class="text-nile-accent font-bold text-lg">31.5%</span>
+                                </div>
+                                <div class="progress-bar-container" style="height:14px">
+                                    <div class="progress-bar bg-nile-accent" style="width:0%" id="prog-rem"></div>
+                                </div>
+                            </div>
+                            <div class="text-center mt-4 p-3 bg-nile-dark rounded-xl border border-nile-card">
+                                <p class="text-xs text-gray-400">الهدف الإجمالي</p>
+                                <p class="text-2xl font-black text-nile-cyan">20,000 <span
+                                        class="text-sm font-normal text-gray-500">كم</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main><!-- end main -->
+
+    <footer class="bg-[#020b14] border-t border-nile-card py-6 text-center mt-auto">
+        <p class="text-xs text-gray-500 font-bold tracking-wider">تم إعداد هذا التطبيق البحثي لصالح منصة DECA — كلية
+            الهندسة — جامعة دمنهور © 2026 </p>
+    </footer>
+
+    <!-- ===== JAVASCRIPT ===== -->
+    <script>
+        // NAV
+        const navBtns = document.querySelectorAll('.nav-btn'), sections = document.querySelectorAll('.spa-section');
+        navBtns.forEach(btn => { btn.addEventListener('click', () => { navBtns.forEach(b => b.classList.remove('active')); sections.forEach(s => s.classList.remove('active')); btn.classList.add('active'); document.getElementById(btn.dataset.target).classList.add('active'); window.scrollTo({ top: document.querySelector('nav').offsetTop - 10, behavior: 'smooth' }); window.dispatchEvent(new Event('resize')); if (btn.dataset.target === 'adv_stats') initStatsTab(); }); });
+        // DRAG SCROLL
+        const nc = document.querySelector('.nav-container'); let isDrag = false, startX, scrollL;
+        nc.addEventListener('mousedown', e => { isDrag = true; nc.classList.add('dragging'); startX = e.pageX - nc.offsetLeft; scrollL = nc.scrollLeft; });
+        nc.addEventListener('mouseleave', () => { isDrag = false; nc.classList.remove('dragging'); });
+        nc.addEventListener('mouseup', () => { isDrag = false; nc.classList.remove('dragging'); });
+        nc.addEventListener('mousemove', e => { if (!isDrag) return; e.preventDefault(); nc.scrollLeft = scrollL - (e.pageX - nc.offsetLeft - startX) * 2; });
+        nc.addEventListener('touchstart', e => { startX = e.touches[0].pageX - nc.offsetLeft; scrollL = nc.scrollLeft; }, { passive: true });
+        nc.addEventListener('touchmove', e => { nc.scrollLeft = scrollL - (e.touches[0].pageX - nc.offsetLeft - startX); }, { passive: true });
+        // CHARTS
+        Chart.defaults.color = '#8892b0'; Chart.defaults.font.family = 'Cairo';
+        const ctxPop = document.getElementById('popWaterChart');
+        if (ctxPop) { new Chart(ctxPop, { type: 'line', data: { labels: ['1947', '1975', '1990', '2005', '2020', '2024', '2026'], datasets: [{ label: '\u0646\u0635\u064a\u0628 \u0627\u0644\u0641\u0631\u062f (\u0645\u00b3)', data: [2526, 1600, 1100, 850, 700, 560, 490], borderColor: '#00d2ff', backgroundColor: 'rgba(0,210,255,0.08)', fill: true, tension: 0.4, yAxisID: 'y', borderWidth: 3, pointRadius: 4, pointBackgroundColor: '#00d2ff', pointBorderColor: '#020b14' }, { label: '\u0627\u0644\u0633\u0643\u0627\u0646 (\u0645\u0644\u064a\u0648\u0646)', data: [19, 38, 56, 72, 100, 106, 110], type: 'bar', backgroundColor: 'rgba(239,68,68,0.2)', borderColor: '#ef4444', borderWidth: 1, yAxisID: 'y1', borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, scales: { y: { position: 'right', title: { display: true, text: '\u0645\u00b3/\u0641\u0631\u062f', color: '#00d2ff' }, grid: { color: 'rgba(255,255,255,0.04)' } }, y1: { position: 'left', title: { display: true, text: '\u0645\u0644\u064a\u0648\u0646 \u0646\u0633\u0645\u0629', color: '#ef4444' }, grid: { drawOnChartArea: false } }, x: { reverse: true, grid: { display: false } } }, plugins: { legend: { position: 'top' }, tooltip: { rtl: true } } } }); }
+        const ctxPie = document.getElementById('usagePieChart');
+        if (ctxPie) { new Chart(ctxPie, { type: 'doughnut', data: { labels: ['\u0627\u0644\u0632\u0631\u0627\u0639\u0629 (76.91%)', '\u0627\u0644\u0634\u0631\u0628 \u0648\u0627\u0644\u0628\u0644\u062f\u064a\u0627\u062a (14.06%)', '\u0627\u0644\u0635\u0646\u0627\u0639\u0629 (6.21%)', '\u0623\u062e\u0631\u0649 (2.82%)'], datasets: [{ data: [76.91, 14.06, 6.21, 2.82], backgroundColor: ['#2ecc71', '#00d2ff', '#f39c12', '#8b5cf6'], borderWidth: 0, hoverOffset: 6 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'bottom', labels: { color: '#ccd6f6', font: { family: 'Cairo' }, padding: 10 } }, tooltip: { rtl: true } } } }); }
+        const ctxEff = document.getElementById('efficiencyBarChart');
+        if (ctxEff) { new Chart(ctxEff, { type: 'bar', data: { labels: ['\u0627\u0644\u0631\u064a \u0628\u0627\u0644\u063a\u0645\u0631', '\u0627\u0644\u0631\u064a \u0628\u0627\u0644\u0631\u0634', '\u0627\u0644\u0631\u064a \u0628\u0627\u0644\u062a\u0646\u0642\u064a\u0637'], datasets: [{ label: '\u0643\u0641\u0627\u0621\u0629 \u0627\u0644\u0627\u0633\u062a\u062e\u062f\u0627\u0645 (%)', data: [50, 75, 95], backgroundColor: ['rgba(239,68,68,0.65)', 'rgba(243,156,18,0.65)', 'rgba(46,204,113,0.85)'], borderColor: ['#ef4444', '#f39c12', '#2ecc71'], borderWidth: 1, borderRadius: 6 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { max: 100, grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { callback: v => v + '%' } }, x: { grid: { display: false } } }, plugins: { legend: { display: false } } } }); }
+
+        // SCADA CORE
+        const NB = { 1: { ph: 7.4, ec: 180, do: 7.2, tur: 8, temp: 21, tds: 144, hm: 12, ecoli: 80, mp: 25, name: 'Node 1 | \u0623\u0633\u0648\u0627\u0646' }, 2: { ph: 7.2, ec: 200, do: 6.8, tur: 12, temp: 22, tds: 160, hm: 15, ecoli: 90, mp: 30, name: 'Node 2 | \u0627\u0644\u0623\u0642\u0635\u0631' }, 3: { ph: 7.0, ec: 250, do: 6.2, tur: 18, temp: 24, tds: 200, hm: 20, ecoli: 100, mp: 40, name: 'Node 3 | \u0623\u0633\u064a\u0648\u0637' }, 4: { ph: 6.8, ec: 310, do: 5.8, tur: 25, temp: 25, tds: 248, hm: 28, ecoli: 130, mp: 55, name: 'Node 4 | \u0627\u0644\u0642\u0646\u0627\u0637\u0631' }, 5: { ph: 6.6, ec: 380, do: 5.2, tur: 32, temp: 26, tds: 304, hm: 35, ecoli: 150, mp: 70, name: 'Node 5 | \u062f\u0645\u064a\u0627\u0637' }, 6: { ph: 6.7, ec: 360, do: 5.4, tur: 28, temp: 25.5, tds: 288, hm: 30, ecoli: 140, mp: 60, name: 'Node 6 | \u0631\u0634\u064a\u062f' }, 7: { ph: 6.3, ec: 520, do: 4.5, tur: 45, temp: 27, tds: 416, hm: 45, ecoli: 180, mp: 90, name: 'Node 7 | \u0628\u062d\u064a\u0631\u0629 \u0627\u0644\u0645\u0646\u0632\u0644\u0629' } };
+        let NT = {}, NC = {}; for (let i = 1; i <= 7; i++) { NT[i] = { ...NB[i] }; NC[i] = { ...NB[i] }; }
+        let activeNode = 1, currentScenario = 'normal', simTime = 0, propagationTimeouts = [], alarmCooldown = {};
+        let currentSeason = 'spring', sensorHealth = 100, isMuted = true, emergencyActive = false;
+        let audioCtx = null, sirenOsc = null, sirenGain = null, sirenInterval = null;
+        const logContent = document.getElementById('log-content'), termContainer = document.getElementById('terminal-container');
+        function addLog(msg, type = 'info') { const t = new Date().toISOString().substring(11, 19); const div = document.createElement('div'); div.className = 'terminal-entry'; const c = { info: '#8892b0', sys: '#64ffda', warn: '#f39c12', error: '#ef4444' }; div.innerHTML = '<span style="color:#475569">[' + t + ']</span> <span style="color:' + (c[type] || c.info) + '">' + msg + '</span>'; logContent.appendChild(div); termContainer.scrollTop = termContainer.scrollHeight; if (logContent.children.length > 30) logContent.removeChild(logContent.firstChild); }
+        const maxPts = 40;
+        const simChart = new Chart(document.getElementById('simComboChart'), { type: 'line', data: { labels: Array(maxPts).fill(''), datasets: [{ label: 'pH', data: Array(maxPts).fill(NC[1].ph), borderColor: '#64ffda', borderWidth: 2, tension: 0.4, pointRadius: 0, yAxisID: 'y' }, { label: 'DO', data: Array(maxPts).fill(NC[1].do), borderColor: '#00d2ff', borderWidth: 2, tension: 0.4, pointRadius: 0, yAxisID: 'y1' }, { label: 'Turb/10', data: Array(maxPts).fill(NC[1].tur / 10), borderColor: '#f39c12', borderWidth: 1.5, tension: 0.4, pointRadius: 0, yAxisID: 'y1', borderDash: [4, 2] }] }, options: { responsive: true, maintainAspectRatio: false, animation: { duration: 0 }, plugins: { legend: { position: 'top', labels: { boxWidth: 12, font: { size: 10 } } }, tooltip: { enabled: false } }, scales: { x: { display: false }, y: { min: 0, max: 14, position: 'right', grid: { color: 'rgba(100,255,218,0.04)' }, ticks: { font: { size: 9 }, stepSize: 2 } }, y1: { min: 0, max: 14, position: 'left', grid: { drawOnChartArea: false }, ticks: { font: { size: 9 }, stepSize: 2 } } } } });
+        function calcWQI(ph, doV, tur, ec) { const phQ = (ph >= 6.5 && ph <= 8.5) ? 100 : (ph >= 5.5 && ph < 6.5 || ph > 8.5 && ph <= 9.5) ? 55 : 20; const doQ = Math.min(100, Math.max(0, (doV / 9) * 100)); const turQ = Math.min(100, Math.max(0, 100 - tur * 1.5)); const ecQ = Math.min(100, Math.max(0, 100 - ec / 12)); return Math.round(phQ * 0.28 + doQ * 0.32 + turQ * 0.22 + ecQ * 0.18); }
+        function wqiColor(w) { if (w >= 80) return { stroke: '#64ffda', label: '\u0645\u0645\u062a\u0627\u0632', cls: 'alert-green' }; if (w >= 60) return { stroke: '#00d2ff', label: '\u062c\u064a\u062f', cls: 'alert-green' }; if (w >= 40) return { stroke: '#f39c12', label: '\u0645\u0642\u0628\u0648\u0644', cls: 'alert-yellow' }; if (w >= 20) return { stroke: '#ef4444', label: '\u0631\u062f\u064a\u0621', cls: 'alert-red' }; return { stroke: '#ff0000', label: '\u062d\u0631\u062c', cls: 'alert-red blink-critical' }; }
+        function setCardState(id, val, lo, hi, isLow) { const card = document.getElementById('card-' + id); const el = document.getElementById('val-' + id); if (!card || !el) return; card.className = card.className.replace(/sensor-card-(alert|warn)/g, '').trim(); el.className = 'text-xl digital-font '; if ((isLow && val < lo) || (!isLow && val > hi)) { card.classList.add('sensor-card-alert'); el.className += 'alert-red blink-critical'; } else if ((isLow && val < lo * 1.1) || (!isLow && val > hi * 0.85)) { card.classList.add('sensor-card-warn'); el.className += 'alert-yellow'; } else { el.className += 'alert-green'; } }
+        function startSiren() { if (isMuted || audioCtx) return; audioCtx = new (window.AudioContext || window.webkitAudioContext)(); sirenOsc = audioCtx.createOscillator(); sirenGain = audioCtx.createGain(); sirenOsc.type = 'square'; sirenOsc.frequency.value = 400; sirenGain.gain.value = 0.15; sirenOsc.connect(sirenGain); sirenGain.connect(audioCtx.destination); sirenOsc.start(); let up = true; sirenInterval = setInterval(() => { sirenOsc.frequency.value = up ? 1000 : 400; up = !up; }, 150); }
+        function stopSiren() { if (sirenInterval) clearInterval(sirenInterval); if (sirenOsc) try { sirenOsc.stop(); } catch (e) { } audioCtx = null; sirenOsc = null; sirenGain = null; sirenInterval = null; }
+        window.toggleMute = function () { isMuted = !isMuted; document.getElementById('mute-icon').className = isMuted ? 'fa-solid fa-volume-xmark' : 'fa-solid fa-volume-high'; if (isMuted) stopSiren(); };
+        function checkAlarms(c) { const badge = document.getElementById('sys-status-badge'); const eb = document.getElementById('emergency-btn'); let st = 'NORMAL'; const wqi = calcWQI(c.ph, c.do, c.tur, c.ec); if (wqi < 30) { st = 'CRITICAL'; badge.className = 'text-xs px-3 py-1 rounded font-bold border border-red-500/50 bg-red-500/20 text-red-400 animate-pulse'; if (!isMuted && !audioCtx) startSiren(); eb.classList.remove('hidden'); eb.classList.add('emergency-pulse'); } else if (wqi < 60) { st = 'WARNING'; badge.className = 'text-xs px-3 py-1 rounded font-bold border border-yellow-500/50 bg-yellow-500/20 text-yellow-400'; stopSiren(); eb.classList.add('hidden'); } else { badge.className = 'text-xs px-3 py-1 rounded font-bold border border-green-500/30 bg-green-500/10 text-green-400'; stopSiren(); eb.classList.add('hidden'); } badge.innerText = st; }
+        function updateNodeMapColors() { for (let n = 1; n <= 7; n++) { const nd = document.getElementById('mnode-' + n); if (!nd) continue; const s = NC[n]; nd.classList.remove('node-warn', 'node-crit', 'node-plastic', 'active-node'); const w = calcWQI(s.ph, s.do, s.tur, s.ec); if (s.mp > 200) nd.classList.add('node-plastic'); else if (w < 40) nd.classList.add('node-crit'); else if (w < 65) nd.classList.add('node-warn'); if (n === activeNode) nd.classList.add('active-node'); } }
+        const seasonMod = { winter: { temp: -3, do: 1.1 }, spring: { temp: 0, do: 1 }, summer: { temp: 4, do: 0.85 }, autumn: { temp: 1, do: 0.95 } };
+        window.setSeason = function (s) { currentSeason = s; document.querySelectorAll('[id^=btn-]').forEach(b => b.style.opacity = '0.5'); const b = document.getElementById('btn-' + s); if (b) b.style.opacity = '1'; addLog('Season: ' + s, 'sys'); for (let i = 1; i <= 7; i++) { const base = { ...NB[i] }; base.temp += seasonMod[s].temp; base.do *= seasonMod[s].do; if (currentScenario === 'normal') NT[i] = { ...base, name: NB[i].name }; } };
+        setInterval(() => { if (sensorHealth > 0) sensorHealth -= 0.5; sensorHealth = Math.max(0, sensorHealth); document.getElementById('health-val').textContent = Math.round(sensorHealth) + '%'; const hb = document.getElementById('health-bar'); hb.style.width = sensorHealth + '%'; hb.className = 'health-bar-fill ' + (sensorHealth > 60 ? 'bg-nile-cyan' : sensorHealth > 40 ? 'bg-yellow-400' : 'bg-red-500'); }, 10000);
+        window.deployDrone = function () { sensorHealth = 100; document.getElementById('health-val').textContent = '100%'; document.getElementById('health-bar').style.width = '100%'; addLog('Drone deployed - sensors at 100%', 'sys'); };
+        window.activateEmergency = function () { emergencyActive = true; addLog('EMERGENCY PROTOCOL ACTIVATED', 'error'); for (let i = 1; i <= 7; i++)NT[i] = { ...NB[i], name: NB[i].name }; currentScenario = 'normal'; setTimeout(() => { emergencyActive = false; addLog('Emergency cleared', 'sys'); }, 5000); };
+        window.showPopup = function (id, el) { const s = NC[id]; const w = calcWQI(s.ph, s.do, s.tur, s.ec); const wc = wqiColor(w); const p = document.getElementById('node-popup'); p.innerHTML = '<div class="text-xs font-bold text-white mb-1">' + NB[id].name + '</div><div class="flex items-center gap-2 mb-1"><span class="text-lg font-black" style="color:' + wc.stroke + '">' + w + '</span><span class="text-[9px] px-1.5 py-0.5 rounded" style="background:' + wc.stroke + '20;color:' + wc.stroke + '">' + wc.label + '</span></div><div class="text-[9px] text-gray-400">pH: ' + s.ph.toFixed(2) + ' | DO: ' + s.do.toFixed(1) + '</div>'; p.style.top = (el.offsetTop - 80) + 'px'; p.style.left = (el.offsetLeft - 60) + 'px'; p.classList.add('visible'); };
+        window.hidePopup = function () { document.getElementById('node-popup').classList.remove('visible'); };
+        setInterval(() => {
+            const lr = 0.14, rnd = s => (Math.random() - 0.5) * s; const noiseMult = sensorHealth < 40 ? (3 - sensorHealth / 20) : 1;
+            for (let i = 1; i <= 7; i++) { let c = NC[i], t = NT[i]; const k = ['ph', 'ec', 'do', 'tur', 'temp', 'tds', 'hm', 'ecoli', 'mp']; const rs = [0.06, 5, 0.12, 1.2, 0.05, 3, 1, 5, 3]; k.forEach((key, j) => { if (c[key] !== undefined && t[key] !== undefined) c[key] += (t[key] - c[key]) * lr + rnd(rs[j] * noiseMult); }); c.ph = Math.max(0.5, Math.min(13.5, c.ph)); c.do = Math.max(0, Math.min(14, c.do)); c.tur = Math.max(0, Math.min(200, c.tur)); c.ec = Math.max(10, Math.min(2000, c.ec)); c.tds = Math.max(5, Math.min(1500, c.tds)); c.temp = Math.max(5, Math.min(45, c.temp)); c.hm = Math.max(0, Math.min(100, c.hm)); c.ecoli = Math.max(0, Math.min(1000, c.ecoli)); c.mp = Math.max(0, Math.min(500, c.mp)); }
+            let c = NC[activeNode]; document.getElementById('val-ph').innerText = c.ph.toFixed(2); document.getElementById('val-do').innerText = c.do.toFixed(1); document.getElementById('val-tur').innerText = c.tur.toFixed(1); document.getElementById('val-ec').innerText = Math.round(c.ec); document.getElementById('val-temp').innerText = c.temp.toFixed(1); document.getElementById('val-tds').innerText = Math.round(c.tds); document.getElementById('val-hm').innerText = Math.round(c.hm); document.getElementById('val-ecoli').innerText = Math.round(c.ecoli); document.getElementById('val-mp').innerText = Math.round(c.mp);
+            setCardState('ph', c.ph, 6.5, 8.5, false); setCardState('do', c.do, 4.0, 14, true); setCardState('tur', c.tur, 0, 50, false); setCardState('ec', c.ec, 0, 800, false); setCardState('temp', c.temp, 5, 35, false); setCardState('tds', c.tds, 0, 500, false); setCardState('hm', c.hm, 0, 50, false); setCardState('ecoli', c.ecoli, 0, 200, false); setCardState('mp', c.mp, 0, 100, false);
+            const wqi = calcWQI(c.ph, c.do, c.tur, c.ec); const wc = wqiColor(wqi); document.getElementById('val-wqi').innerText = wqi; document.getElementById('val-wqi').className = 'text-3xl font-black digital-font ' + wc.cls; document.getElementById('wqi-label').innerText = wc.label; document.getElementById('wqi-label').style.color = wc.stroke; const ci = document.getElementById('wqi-circle'); ci.setAttribute('stroke', wc.stroke); ci.setAttribute('stroke-dasharray', wqi + ' 100');
+            simChart.data.datasets[0].data.push(c.ph); simChart.data.datasets[0].data.shift(); simChart.data.datasets[1].data.push(c.do); simChart.data.datasets[1].data.shift(); simChart.data.datasets[2].data.push(c.tur / 10); simChart.data.datasets[2].data.shift(); simChart.update();
+            checkAlarms(c); updateNodeMapColors(); simTime++;
+        }, 1000);
+        function applyPollution(nid, type, prop) {
+            const b = NB[nid]; if (type === 'industrial') { NT[nid] = { ...NT[nid], ph: b.ph - 3.5, ec: b.ec * 4.5, do: b.do - 5.5, tur: b.tur * 10, temp: b.temp + 3, tds: b.tds * 5, hm: 95 }; if (!prop) addLog('[Node' + nid + '] Industrial discharge!', 'error'); }
+            else if (type === 'agricultural') { NT[nid] = { ...NT[nid], ph: b.ph + 1.7, ec: b.ec * 2.1, do: b.do - 2.8, tur: b.tur * 5, temp: b.temp + 1, tds: b.tds * 2 }; if (!prop) addLog('[Node' + nid + '] Agricultural runoff!', 'warn'); }
+            else if (type === 'municipal') { NT[nid] = { ...NT[nid], ecoli: 800, do: b.do - 3, tur: b.tur * 3 }; if (!prop) addLog('[Node' + nid + '] Municipal - E.coli spike!', 'warn'); }
+            else if (type === 'plastic') { NT[nid] = { ...NT[nid], mp: 450, tur: b.tur * 2 }; if (!prop) addLog('[Node' + nid + '] Plastic contamination!', 'warn'); }
+        }
+        const flowNext = { 1: [2], 2: [3], 3: [4], 4: [5, 6], 5: [7], 6: [], 7: [] };
+        function propagate(tid, type, sid) { if (currentScenario === 'normal') return; applyPollution(tid, type, true); addLog('Pollution: Node' + sid + ' -> Node' + tid, 'warn'); const tc = document.getElementById('tti-container'); tc.style.display = 'block'; document.getElementById('tti-val').textContent = '~' + (tid * 4) + 'h'; document.getElementById('tti-target').textContent = 'Node ' + tid; const nxt = flowNext[tid] || []; nxt.forEach(n => { propagationTimeouts.push(setTimeout(() => propagate(n, type, tid), 5000)); }); }
+        window.triggerScenario = function (type) {
+            currentScenario = type; propagationTimeouts.forEach(clearTimeout); propagationTimeouts = []; document.getElementById('tti-container').style.display = 'none';
+            if (type === 'normal') { for (let i = 1; i <= 7; i++)NT[i] = { ...NB[i] }; alarmCooldown = {}; addLog('Restoring all nodes...', 'sys'); stopSiren(); } else { applyPollution(activeNode, type); const nxt = flowNext[activeNode] || []; nxt.forEach((n, i) => { propagationTimeouts.push(setTimeout(() => propagate(n, type, activeNode), (i + 1) * 5000)); }); }
+        };
+        window.selectNode = function (id) { activeNode = id; const b = NB[id]; document.getElementById('active-node-label').innerText = 'Node ' + id; document.getElementById('node-label-chart').innerText = b.name; simChart.data.datasets[0].data = Array(maxPts).fill(NC[id].ph); simChart.data.datasets[1].data = Array(maxPts).fill(NC[id].do); simChart.data.datasets[2].data = Array(maxPts).fill(NC[id].tur / 10); simChart.update(); addLog('Switched to ' + b.name, 'sys'); };
+        // TOOLS
+        let farmChartInstance = null;
+        window.updateFarm = function () { const crop = document.getElementById('farm-crop').value, irr = document.getElementById('farm-irr').value; const data = { sugarcane: { flood: [18000, 12000], sprinkler: [22000, 7000], drip: [28000, 4000] }, wheat: { flood: [8000, 8000], sprinkler: [11000, 5000], drip: [14000, 2500] }, beet: { flood: [12000, 9000], sprinkler: [16000, 5500], drip: [20000, 3000] } }; const d = data[crop][irr]; if (farmChartInstance) farmChartInstance.destroy(); farmChartInstance = new Chart(document.getElementById('farmChart'), { type: 'bar', data: { labels: ['\u0627\u0644\u0631\u0628\u062d (\u062c\u0646\u064a\u0647/\u0641\u062f\u0627\u0646)', '\u0641\u0642\u062f \u0627\u0644\u0645\u064a\u0627\u0647 (\u0645\u00b3/\u0641\u062f\u0627\u0646)'], datasets: [{ data: d, backgroundColor: ['rgba(46,204,113,0.7)', 'rgba(239,68,68,0.7)'], borderColor: ['#2ecc71', '#ef4444'], borderWidth: 1, borderRadius: 6 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { color: 'rgba(255,255,255,0.04)' } }, x: { grid: { display: false } } } } }); };
+        setTimeout(() => updateFarm(), 500);
+        window.updateCalc = function () { const f = +document.getElementById('calc-fam').value, s = +document.getElementById('calc-sh').value, l = +document.getElementById('calc-lau').value, g = +document.getElementById('calc-gar').value; document.getElementById('calc-fam-val').textContent = f; document.getElementById('calc-sh-val').textContent = s; document.getElementById('calc-lau-val').textContent = l; document.getElementById('calc-gar-val').textContent = g; const daily = f * (s * 12 + 50) + l * 70 / 7 + g * 18; document.getElementById('calc-daily').textContent = Math.round(daily); };
+        window.updateScarcity = function () { const p = +document.getElementById('scar-pop').value, s = +document.getElementById('scar-share').value; document.getElementById('scar-pop-val').textContent = p; document.getElementById('scar-share-val').textContent = s; const pc = Math.round(s * 1e9 / (p * 1e6)); document.getElementById('scar-result').textContent = pc; const st = pc < 500 ? '\u26a0 \u0634\u062d \u0645\u0627\u0626\u064a \u0645\u0637\u0644\u0642' : pc < 1000 ? '\u26a0 \u062a\u062d\u062a \u062e\u0637 \u0627\u0644\u0641\u0642\u0631 \u0627\u0644\u0645\u0627\u0626\u064a' : '\u2713 \u0641\u0648\u0642 \u062e\u0637 \u0627\u0644\u0641\u0642\u0631'; document.getElementById('scar-status').textContent = st; document.getElementById('scar-result').style.color = pc < 500 ? '#ef4444' : pc < 1000 ? '#f39c12' : '#2ecc71'; document.getElementById('scar-status').style.color = pc < 500 ? '#ef4444' : pc < 1000 ? '#f39c12' : '#2ecc71'; };
+        const compCtx = document.getElementById('comparisonChart');
+        if (compCtx) { new Chart(compCtx, { type: 'bar', data: { labels: ['\u0627\u0644\u0623\u0631\u062f\u0646', '\u0627\u0644\u0633\u0639\u0648\u062f\u064a\u0629', '\u0645\u0635\u0631', '\u0627\u0644\u0633\u0648\u062f\u0627\u0646', '\u0623\u0644\u0645\u0627\u0646\u064a\u0627', '\u0625\u062b\u064a\u0648\u0628\u064a\u0627', '\u0627\u0644\u0645\u0639\u062f\u0644 \u0627\u0644\u0639\u0627\u0644\u0645\u064a'], datasets: [{ label: '\u0645\u00b3/\u0641\u0631\u062f/\u0633\u0646\u0629', data: [60, 75, 490, 1200, 1200, 1500, 5900], backgroundColor: ['#ef4444', '#ef4444', '#f39c12', '#00d2ff', '#00d2ff', '#2ecc71', '#64ffda'], borderRadius: 6, borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { grid: { color: 'rgba(255,255,255,0.04)' } }, y: { grid: { display: false } } } } }); }
+        let statsInit = false;
+        function initStatsTab() {
+            if (statsInit) return; statsInit = true;
+            document.querySelectorAll('.countup').forEach(el => { const target = parseFloat(el.dataset.target), suffix = el.dataset.suffix || ''; let current = 0; const step = target / 60; const timer = setInterval(() => { current += step; if (current >= target) { current = target; clearInterval(timer); } el.textContent = (target % 1 === 0 ? Math.round(current) : current.toFixed(1)) + suffix; }, 30); });
+            setTimeout(() => { const pd = document.getElementById('prog-done'), pw = document.getElementById('prog-wip'), pr = document.getElementById('prog-rem'); if (pd) pd.style.width = '37.5%'; if (pw) pw.style.width = '31%'; if (pr) pr.style.width = '31.5%'; }, 300);
+            const pc = document.getElementById('statPerCapita'); if (pc) { new Chart(pc, { type: 'line', data: { labels: ['1960', '1980', '2000', '2010', '2026'], datasets: [{ label: '\u0646\u0635\u064a\u0628 \u0627\u0644\u0641\u0631\u062f \u0645\u00b3', data: [2000, 1300, 850, 660, 490], borderColor: '#00d2ff', backgroundColor: 'rgba(0,210,255,0.1)', fill: true, tension: 0.4, borderWidth: 3, pointRadius: 5, pointBackgroundColor: '#00d2ff' }, { label: '\u062e\u0637 \u0627\u0644\u0641\u0642\u0631 \u0627\u0644\u0645\u0627\u0626\u064a', data: [1000, 1000, 1000, 1000, 1000], borderColor: '#ef4444', borderDash: [8, 4], borderWidth: 2, pointRadius: 0, fill: false }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' } }, scales: { y: { grid: { color: 'rgba(255,255,255,0.04)' } }, x: { grid: { display: false } } } } }); }
+            const dd = document.getElementById('statDemand'); if (dd) { new Chart(dd, { type: 'doughnut', data: { labels: ['\u0627\u0644\u0632\u0631\u0627\u0639\u0629 76.91%', '\u0627\u0644\u0634\u0631\u0628 14.06%', '\u0627\u0644\u0635\u0646\u0627\u0639\u0629 6.21%', '\u0623\u062e\u0631\u0649 2.82%'], datasets: [{ data: [76.91, 14.06, 6.21, 2.82], backgroundColor: ['#2ecc71', '#00d2ff', '#f39c12', '#8b5cf6'], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { position: 'bottom', labels: { padding: 8, font: { size: 11 } } } } } }); }
+            const sd = document.getElementById('statSources'); if (sd) { new Chart(sd, { type: 'doughnut', data: { labels: ['\u0627\u0644\u0646\u064a\u0644 84.93%', '\u0645\u064a\u0627\u0647 \u062c\u0648\u0641\u064a\u0629 12.09%', '\u0623\u0645\u0637\u0627\u0631 1.99%', '\u062a\u062d\u0644\u064a\u0629 0.99%'], datasets: [{ data: [84.93, 12.09, 1.99, 0.99], backgroundColor: ['#00d2ff', '#64ffda', '#f39c12', '#8b5cf6'], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { position: 'bottom', labels: { padding: 8, font: { size: 11 } } } } } }); }
+        }
+        addLog('Connecting to WSN Gateway [LoRaWAN]...', 'sys');
+        setTimeout(() => addLog('Gateway OK. 7/7 nodes online.', 'sys'), 1500);
+        setTimeout(() => addLog('DECA EWS v2.0 active.', 'sys'), 2800);
+
+    </script>
+</body>
+
+</html>
