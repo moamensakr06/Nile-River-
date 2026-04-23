@@ -23,10 +23,7 @@ Instead of a traditional research paper, this project tackles the environmental 
 * 📉 **Water Scarcity Projection:** Dynamically calculates Egypt's per capita water share based on population growth and historical quotas.
 
 ## 👥 The Team
-This project was designed and developed by engineering students at **Damanhour University**:
-* **Moamen Sakr** (Networks & Cyber Security Engineering) - *Lead Developer*
-* **Ashraqat** * **Mahmoud Nassar**
-* *[Add remaining teammates here]*
+This project was designed and developed by engineering students at **Damanhour University**.
 
 ## 📄 License
 All rights reserved. This project was built for educational and research purposes.
